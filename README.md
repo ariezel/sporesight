@@ -6,6 +6,8 @@ Authored by **Ariezel M. Bautista** and **Dr. Val Randolf M. Madrid**
 ## Installation
 Description
 ```bash
+pip install QT-PyQt-PySide-Custom-Widgets
+pip install PySide6
 
 ```
 
