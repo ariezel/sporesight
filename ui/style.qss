@@ -132,3 +132,24 @@ QListWidget,
   font-size: 16px;
   padding: 10px 20px;
 }
+
+#feed_desc_frame, 
+#feed_desc {
+  background-color: #4F1C51;
+  color: white;
+  border-radius: 14px;
+}
+
+#feed_desc {
+  font-weight: 700;
+}
+
+#feed_results {
+  margin: 15px 15px;
+}
+
+#feed_body_desc {
+  border: none;
+  background-color: #f7f7f7;
+}
+

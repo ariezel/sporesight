@@ -182,7 +182,10 @@ class MainWindow(QMainWindow):
         self.feed_desc.setText(option.get("description"))
 
         self.feed_label = self.ui.feed_label
-        # self.feed_label.setFixedSize(640, 480)  
+        self.feed_label.setScaledContents(True)  # Enable dynamic resizing
+
+        # Ensure the label resizes dynamically
+        self.feed_label.resize(self.feed_ui.size())  
 
         ''' Call the Camera Thread '''
         self.CameraThread = CameraThread()
