@@ -26,3 +26,26 @@ INTER_FONT = FONTS_DIR / "Inter.ttf"
 ASSETS_DIR = BASE_DIR / "assets"
 DATA_JSON = ASSETS_DIR / "data.json"
 MODEL_FILE = ASSETS_DIR / "model.onnx"
+
+# Pages
+MENU = [
+    { 
+        "name": "     YOLO Configuration", 
+        "default_icon": SETTING_ICON,
+        "selected_icon": SETTING_ICON_SELECTED,
+        "description": "Input your preferred configuration file and confidence score", 
+    },
+    { 
+        "name": "     Camera View", 
+        "default_icon": LOGO_ICON,
+        "selected_icon": LOGO_ICON_SELECTED,
+        "description": "Results", 
+    },
+    {
+        "name": "     About", 
+        "default_icon": PERSON_ICON,
+        "selected_icon": PERSON_ICON_SELECTED,
+        "description": "", 
+    }
+]
+

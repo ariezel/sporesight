@@ -20,7 +20,7 @@ class MainWindow(QMainWindow):
 
         # self.setWindowFlags(Qt.FramelessWindowHint | Qt.CustomizeWindowHint | Qt.WindowStaysOnTopHint)
         # self.setAttribute(Qt.WA_TranslucentBackground)
-        
+
         ''' Initialize UI and its elements '''
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
@@ -53,23 +53,8 @@ class MainWindow(QMainWindow):
         self.menu_btn.setCursor(Qt.PointingHandCursor)
 
         ''' Name has 5 spaces at the beginning due to UI issues '''
-        self.menu_list = [
-            { 
-                "name": "     YOLO Configuration", 
-                "default_icon": SETTING_ICON,
-                "selected_icon": SETTING_ICON_SELECTED
-            },
-            { 
-                "name": "     Camera View", 
-                "default_icon": LOGO_ICON,
-                "selected_icon": LOGO_ICON_SELECTED
-            },
-            {
-                "name": "     About", 
-                "default_icon": PERSON_ICON,
-                "selected_icon": PERSON_ICON_SELECTED
-            }
-        ]
+        ''' List is located at the resources.py file '''
+        self.menu_list = MENU
         
         ''' Initialize UI slots '''
         self.init_list_widget(self.menu_list)
@@ -153,44 +138,61 @@ class MainWindow(QMainWindow):
             self.main_content.removeWidget(widget)
 
         for option in menu_list:
-            text = option.get("name")
-            layout = QGridLayout()
-            label = QLabel(text=text)
-            label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            text = option.get("name").strip()  # Remove spaces
+
+            if text == "YOLO Configuration": self.init_config_ui(option)
+            elif text == "Camera View": self.init_feed_ui(option)
+
+            else:
+                text = option.get("name")
+                layout = QGridLayout()
+                label = QLabel(text=text)
+                label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+                
+                font = QFont()
+                font.setPixelSize(30)
+
+                label.setFont(font)
+                layout.addWidget(label)
+                new_page = QWidget()
+                new_page.setLayout(layout)
+                self.main_content.addWidget(new_page)
+
+    ''' Edit Config UI '''
+    def init_config_ui(self, option):
+        
+        self.config_title = self.ui.config_title
+        self.config_desc = self.ui.config_desc
+
+        self.config_title.setText(option.get("name"))
+        self.config_desc.setText(option.get("description"))
+        self.config_desc.setWordWrap(True)
+
+        self.config_ui = self.ui.config_section_frame  # Initialize the UI class
+        self.main_content.addWidget(self.config_ui)
+
+    ''' Edit Feed UI '''
+    def init_feed_ui(self, option):
             
-            font = QFont()
-            font.setPixelSize(30)
+        self.feed_title = self.ui.feed_title
+        self.feed_desc = self.ui.feed_desc
+        self.feed_ui = self.ui.feed_section_frame  # Initialize the UI class
 
-            label.setFont(font)
-            layout.addWidget(label)
-            new_page = QWidget()
-            new_page.setLayout(layout)
-            self.main_content.addWidget(new_page)
+        self.feed_title.setText(option.get("name"))
+        self.feed_desc.setText(option.get("description"))
 
-# Set the application into a frameless window
-# self.setWindowFlags(Qt.FramelessWindowHint | Qt.CustomizeWindowHint | Qt.WindowStaysOnTopHint)
-# self.setAttribute(Qt.WA_TranslucentBackground)
+        self.feed_label = self.ui.feed_label
+        # self.feed_label.setFixedSize(640, 480)  
 
-# # Cancels the feed but does not stop the program
-# self.cancelBTN = QPushButton("Cancel Feed")
-# self.cancelBTN.clicked.connect(self.cancelFeed)
-
-# # Add widgets to the layout
-# self.VBL.addWidget(self.feedLabel)
-# self.VBL.addWidget(self.cancelBTN)
-
-# # Set the layout to the central widget
-# centralWidget.setLayout(self.VBL)
-
-        # # Call CameraThread
-        # self.CameraThread = CameraThread()
-        # self.CameraThread.start()  # Start the camera thread
-
-# # Connect the signal for image updates
-# self.CameraThread.imageUpdate.connect(self.imageUpdateSlot)
+        ''' Call the Camera Thread '''
+        self.CameraThread = CameraThread()
+        self.CameraThread.start()  # Start the camera thread
+        self.CameraThread.imageUpdate.connect(self.imageUpdateSlot) # Connect the signal for image updates
+        
+        self.main_content.addWidget(self.feed_ui)
 
     def imageUpdateSlot(self, img):
-        self.feedLabel.setPixmap(QPixmap.fromImage(img))
+        self.feed_label.setPixmap(QPixmap.fromImage(img))
 
     def cancelFeed(self):
         self.CameraThread.stop()
