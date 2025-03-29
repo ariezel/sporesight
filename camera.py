@@ -3,6 +3,8 @@ import cv2
 from PySide6.QtCore import *
 from PySide6.QtGui import *
 
+# TODO Dynamically connect to wifi camera
+# TODO Scan for available IP Cameras
 # Replace with the camera's stream URL
 stream_url = "rtsp://192.168.7.1:554/axis-media/media.amp?streamprofile=Quality"
 

@@ -18,6 +18,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle(self.title)
         self.setWindowIcon(QPixmap(LOGO_ICON_SELECTED))
 
+        # TODO Add more UI features
         # self.setWindowFlags(Qt.FramelessWindowHint | Qt.CustomizeWindowHint | Qt.WindowStaysOnTopHint)
         # self.setAttribute(Qt.WA_TranslucentBackground)
 
@@ -130,6 +131,7 @@ class MainWindow(QMainWindow):
             self.maximizedmenu.addItem(item2)
             self.maximizedmenu.setCurrentRow
 
+    # TODO Add ABOUT page
     ''' Initialize stack widget with content page '''
     def init_stackedwidget(self, menu_list):
         widget_list = self.main_content.findChildren(QWidget)
@@ -143,20 +145,21 @@ class MainWindow(QMainWindow):
             if text == "YOLO Configuration": self.init_config_ui(option)
             elif text == "Camera View": self.init_feed_ui(option)
 
-            else:
-                text = option.get("name")
-                layout = QGridLayout()
-                label = QLabel(text=text)
-                label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-                
-                font = QFont()
-                font.setPixelSize(30)
+            else: self.default_ui(option)
 
-                label.setFont(font)
-                layout.addWidget(label)
-                new_page = QWidget()
-                new_page.setLayout(layout)
-                self.main_content.addWidget(new_page)
+    ''' Default UI '''            
+    def default_ui(self, option): 
+        text = option.get("name")
+        layout = QGridLayout()
+        label = QLabel(text=text)
+        label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        font = QFont()
+        font.setPixelSize(30)
+        label.setFont(font)
+        layout.addWidget(label)
+        new_page = QWidget()
+        new_page.setLayout(layout)
+        self.main_content.addWidget(new_page)
 
     ''' Edit Config UI '''
     def init_config_ui(self, option):
@@ -171,6 +174,9 @@ class MainWindow(QMainWindow):
         self.config_ui = self.ui.config_section_frame  # Initialize the UI class
         self.main_content.addWidget(self.config_ui)
 
+    # TODO Statically resize camera + avoid distortion
+    # TODO Add result widgets + progress bar
+    # TODO Add loading/feed unavailable image if camera is not detected
     ''' Edit Feed UI '''
     def init_feed_ui(self, option):
             
@@ -182,9 +188,7 @@ class MainWindow(QMainWindow):
         self.feed_desc.setText(option.get("description"))
 
         self.feed_label = self.ui.feed_label
-        self.feed_label.setScaledContents(True)  # Enable dynamic resizing
 
-        # Ensure the label resizes dynamically
         self.feed_label.resize(self.feed_ui.size())  
 
         ''' Call the Camera Thread '''
@@ -193,6 +197,10 @@ class MainWindow(QMainWindow):
         self.CameraThread.imageUpdate.connect(self.imageUpdateSlot) # Connect the signal for image updates
         
         self.main_content.addWidget(self.feed_ui)
+    
+    #TODO Fix about page
+    def init_about_ui(self, option):
+        pass
 
     def imageUpdateSlot(self, img):
         self.feed_label.setPixmap(QPixmap.fromImage(img))
