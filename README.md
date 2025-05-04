@@ -4,16 +4,24 @@
 Authored by **Ariezel M. Bautista** and **Dr. Val Randolf M. Madrid**
 
 ## Installation
-Description
+Description`
 ```bash
-pip install QT-PyQt-PySide-Custom-Widgets
-pip install PySide6
+
+
 
 ```
 
 ## Usage
 Description
 ```python
+
+rtsp://192.168.7.1:554/axis-media/media.amp?streamprofile=Quality
+
+yolo export model=model.pt format=onnx dynamic=True opset=16
+    
+docker build -t triton-with-opencv .
+
+docker run --rm -p 8000:8000 -p 8001:8001 -p 8002:8002 -v ${PWD}/model_repository:/models triton-with-opencv tritonserver --model-repository=/models --log-verbose=1 
 
 ```
 

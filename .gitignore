@@ -1,2 +1,4 @@
 __pycache__/
-references.txt
+model_repository/
+detections/
+test/

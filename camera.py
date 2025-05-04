@@ -1,58 +1,87 @@
-import cv2
-
 from PySide6.QtCore import *
 from PySide6.QtGui import *
+import cv2
 
-# TODO Dynamically connect to wifi camera
-# TODO Scan for available IP Cameras
-# Replace with the camera's stream URL
-stream_url = "rtsp://192.168.7.1:554/axis-media/media.amp?streamprofile=Quality"
-
-''' Threading is necessary for multitasking; prevents program window from freezing '''
 class CameraThread(QThread):
+    # Signal for updating image
     imageUpdate = Signal(QImage)
+    # Signal for connection failure
+    connectionFailed = Signal(str)
 
-    ''' Check available indices of camera feeds'''
-    ''' This is only viable for connection via USB '''
-    def test(self):
-        for i in range(5):  
-            cap = cv2.VideoCapture(i)
-            if cap.isOpened():
-                print(f"Camera found at index {i}")             
-                cap.release()
-        pass
+    def __init__(self, model_name, url, parent=None):
+        super().__init__(parent)
+        self.model_name = model_name
+        self.stream_url = url 
+        self.CameraThreadActive = False  
 
-    ''' Run thread, access the camera feed '''
     def run(self):
         self.CameraThreadActive = True
-        capture = cv2.VideoCapture(0) # Change VideoCapture value
+        try:
+            # Convert numeric string to integer for camera indices
+            camera_source = self.stream_url
+            if self.stream_url.isdigit():
+                camera_source = int(self.stream_url)
+                
+            capture = cv2.VideoCapture(camera_source)
+            
+            if not capture.isOpened():
+                error_msg = f"Error: Could not open video stream at {self.stream_url}"
+                
+                self.connectionFailed.emit(error_msg)
+                return error_msg
+                
+            while self.CameraThreadActive:
+                ret, frame = capture.read()
+                
+                if not ret:
+                    print("Error: Could not read frame.")
+                    # If we lose connection, wait a moment and try to reconnect
+                    if not self.CameraThreadActive:  # Check before sleeping
+                        break
+                    QThread.msleep(1000)  # Sleep for 1 second
+                    capture.release()
+                    
+                    # Try to reconnect with the same conversion logic
+                    if not self.CameraThreadActive:  # Check before reconnecting
+                        break
+                    
+                    camera_source = self.stream_url
+                    if self.stream_url.isdigit():
+                        camera_source = int(self.stream_url)
+                        
+                    capture = cv2.VideoCapture(camera_source)
+                    if not capture.isOpened():
+                        print("Reconnection failed. Stopping camera thread.")
+                        break
+                    continue
+                    
+                # Process frame as before
+                img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                convertToQt = QImage(img.data, img.shape[1], img.shape[0], QImage.Format_RGB888)
+                scaled_img = convertToQt.scaled(1920, 1080, Qt.KeepAspectRatio)
+                
+                if self.CameraThreadActive:  # Make sure we're still active before emitting
+                    self.imageUpdate.emit(scaled_img)
+                
+                # Add a small delay to prevent high CPU usage
+                if not self.CameraThreadActive:  # Check before sleeping
+                    break
+                QThread.msleep(10)
+                
+        except Exception as e:
+            print(f"Camera thread error: {str(e)}")
+            self.connectionFailed.emit(f"Camera error: {str(e)}")
+        finally:
+            if 'capture' in locals() and capture is not None:
+                capture.release()
+            print("Camera thread stopped")
 
-        if not capture.isOpened():
-            print("Error: Could not open video stream.")
-            return None  # Return a specific value if capture fails
-
-        while self.CameraThreadActive:
-            ret, frame = capture.read()
-
-            if not ret:
-                print("Error: Could not read frame.")
-                return None
-
-            img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-
-            # Flip image for PyQt to understand
-            flippedImage = cv2.flip(img, 1)
-            convertToQt = QImage(flippedImage.data, flippedImage.shape[1], flippedImage.shape[0], QImage.Format_RGB888)
-
-            # Change size of QImage
-            scaledImg = convertToQt.scaled(640, 480, Qt.KeepAspectRatio) # Can be resized
-
-            # Send signal to Main Window class
-            self.imageUpdate.emit(scaledImg)
-
-        capture.release()
-
-    ''' Stop the while loop '''
     def stop(self):
         self.CameraThreadActive = False
         self.quit()
+        
+        # Use a timer to avoid blocking
+        wait_timer = QTimer()
+        wait_timer.setSingleShot(True)
+        wait_timer.timeout.connect(self.terminate)
+        wait_timer.start(1000)  # Give it 500ms to quit properly
