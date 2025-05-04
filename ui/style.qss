@@ -24,16 +24,73 @@ QStackedWidget {
 }
 
 QPushButton{
-  border:0px;
+  border:0px; 
   padding-top: 16px;
   text-align: left;
   padding-bottom: 10px;
+}
+
+/*  HANDLE BAR VERTICAL */
+QScrollBar::handle:vertical {	
+	background-color: rgb(80, 80, 122);
+	min-height: 30px;
+	border-radius: 7px;
+}
+QScrollBar::handle:vertical:hover{	
+	background-color: #4F1C51;
+}
+QScrollBar::handle:vertical:pressed {	
+	background-color: #4F1C51;
+}
+
+/* BTN TOP - SCROLLBAR */
+QScrollBar::sub-line:vertical {
+	border: none;
+	background-color: #f7f7f7;
+	height: 15px;
+	border-top-left-radius: 7px;
+	border-top-right-radius: 7px;
+}
+
+/* BTN BOTTOM - SCROLLBAR */
+QScrollBar::add-line:vertical {
+	border: none;
+	background-color: #f7f7f7;
+	height: 15px;
+	border-bottom-left-radius: 7px;
+	border-bottom-right-radius: 7px;
+}
+
+/*  HANDLE BAR HORIZONTAL */
+QScrollBar::handle:horizontal {	
+	background-color: rgb(80, 80, 122);
+	min-height: 30px;
+	border-radius: 7px;
+}
+QScrollBar::handle:horizontal:hover{	
+	background-color: #4F1C51;
+}
+QScrollBar::handle:horizontal:pressed {	
+	background-color: #4F1C51;
 }
 
 /* Styles for title frame */
 QListWidget,
 #title_frame {
   background-color: #210F37;
+}
+
+QLineEdit {
+  /* border: none; */
+  border: 1px solid;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  border-color: #210F37;
+  padding: 10px 20px;
+}
+
+QLineEdit:hover {
+  border-color: #210F37;
 }
 
 #main_content,
@@ -107,13 +164,17 @@ QListWidget,
 
 /* Configuration Page */
 #config_section_frame,
-#feed_section_frame {
+#feed_section_frame,
+#analytics_section_frame,
+#about_section_frame {
   border: none;
   background-color: #f7f7f7;
 }
 
 #config_title,
-#feed_title {
+#feed_title,
+#analytics_title,
+#about_title {
   color: white;
   font-weight: bold;
   font-size: 24px;
@@ -121,16 +182,77 @@ QListWidget,
 }
 
 #config_body_frame,
-#feed_body_frame {
+#feed_body_frame,
+#analytics_body_frame,
+#about_body_frame {
   border: none;
   background-color: #f7f7f7;
 }
 
 #config_desc,
-#feed_desc {
+#feed_desc,
+#analytics_desc,
+#about_desc {
+  color: black;
+  font-size: 18px;
+  padding: 10px 15px;
+}
+
+#config_body_desc {
+  max-height: 130px;
+}
+
+#config_body_frame {
+  background-color: #f7f7f7;
+  border: none;
+}
+
+#config_body_files {
+  padding: 30px 40px;
+}
+
+#config_yolo_frame,
+#config_yolobtn_frame,
+#config_camera_frame,
+#config_camerabtn_frame {
+  border: none;
+  margin-right: 20px;
+}
+
+#config_yolo_label,
+#config_camera_label {
   color: black;
   font-size: 16px;
-  padding: 10px 20px;
+  font-weight: 600;
+  margin-right: 20px;
+}
+
+#config_yolo_lineedit,
+#config_camera_lineedit {
+  color: black;
+  font-size: 14px;
+}
+
+#config_yolo_btn,
+#config_camera_btn {
+  text-align: center;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  background-color: #210F37;
+  border: 1px solid;
+  border-color: #210F37;
+  margin-right: 20px;
+  color: white;
+  font-weight: 700;
+  padding: 11px 60px;
+  font-size: 14px;
+  width: 80px;
+}
+
+#config_yolo_btn:hover,
+#config_camera_btn:hover {
+  border-color: #4F1C51;
+  background-color: #4F1C51;
 }
 
 #feed_desc_frame, 
@@ -144,12 +266,75 @@ QListWidget,
   font-weight: 700;
 }
 
-#feed_results {
-  margin: 15px 15px;
+#feed_label {
+  color: black;
+  font-size: 18px;
+}
+
+#feed_camera,
+#results_desc_frame {
+  border: none;
+  background-color: #f7f7f7;
+}
+
+#feed_control_frame,
+#feed_bottom_frame,
+#feed_progressbar_frame {
+  background-color: #f7f7f7;
+  border: none;
 }
 
 #feed_body_desc {
   border: none;
   background-color: #f7f7f7;
 }
+
+#feed_results {
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  margin: 10px 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #444;
+}
+
+#analytics_body_content {
+  border: none;
+  background-color: #f7f7f7;
+}
+
+#about_ics_frame,
+#about_ipb_frame {
+  padding: 20px 50px;
+}
+
+#about_ics_people, 
+#aboout_ipb_people {
+  border: none;
+  background-color: none;
+}
+
+#ics_1, #ics_2, #ics_logo,
+#ipb_1, #ipb_2, #ipb_logo {
+  border: none;
+}
+
+#ics_adviser_name, #ics_adviser_designation,
+#ics_student_name, #ics_student_designation,
+#ipb_adviser_name, #ipb_adviser_designation,
+#ipb_student_name, #ipb_student_designation {
+  font-size: 18px;
+}
+
+#ics_adviser_name, 
+#ics_student_name,
+#ipb_adviser_name,
+#ipb_student_name {
+  font-weight: 700;
+}
+
+
+
 
