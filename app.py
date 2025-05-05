@@ -18,7 +18,7 @@ class MainWindow(QMainWindow):
     
     title = "SporeSight"
 
-    def __init__(self, model_name, server_url, image_path="./test/images/0020.jpg", stream_url="0"):
+    def __init__(self, model_name, server_url, image_path="./test/images/0020.jpg", stream_url="rtsp://192.168.7.1:554/axis-media/media.amp?streamprofile=Quality"):
         super().__init__() 
 
         # Initialize class attributes
@@ -303,7 +303,7 @@ class MainWindow(QMainWindow):
             
             # Process the image
             
-            result_image, detections = self.detector.process_image(self.image_path)
+            result_image, detections = self.detector.process_image(temp_image_path)
         
             if not detections:
                 print("No detections found.")

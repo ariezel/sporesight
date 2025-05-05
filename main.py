@@ -1,4 +1,4 @@
-import argparse, sys, time
+import argparse, sys
 from pathlib import Path
 from PySide6.QtWidgets import QApplication
 from app import MainWindow

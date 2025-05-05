@@ -11,7 +11,7 @@ pip install -r requirements.txt
 
 [2] Install [Docker](https://www.docker.com/products/docker-desktop/) to access the Triton Inference Server
 
-[3] Download the model (model.onnx) from this [GDrive](https://drive.google.com/file/d/1sQwGXEBRTgwTPM9AR27Exm4nQ-WUKxmy/view?usp=drive_link) and put the YOLOV5 model inside model_repository/yolov5/1/
+[3] Download the model (model.onnx) from this [GDrive](https://drive.google.com/file/d/1sQwGXEBRTgwTPM9AR27Exm4nQ-WUKxmy/view?usp=drive_link) and put the YOLOV5 model inside ../model_repository/yolov5/1/
 ```
 ├───model_repository
 │   └───yolov5
