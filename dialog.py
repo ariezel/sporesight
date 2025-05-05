@@ -6,6 +6,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtGui import QPixmap, QFont
 from PySide6.QtCore import Qt, QSize, Signal
+from collections import defaultdict
 
 '''
 Reusable dialog component for displaying detection results
@@ -40,7 +41,7 @@ class DetectionDialog(QDialog):
         
         # Set dialog properties
         self.setWindowTitle(title)
-        self.setMinimumSize(1100, 600)
+        self.setMinimumSize(1200, 600)
         
         # Set dialog styling
         self.setStyleSheet('''
@@ -146,15 +147,19 @@ class DetectionDialog(QDialog):
         layout = QVBoxLayout(panel)
         layout.setContentsMargins(15, 15, 15, 15)
         
-        # Header with detection count
-        detected_items = len(self.detections)
-        header_label = QLabel(f"Detections ({detected_items})")
+        # Process detection data to get class summary
+        class_summary = self.process_detections()
+        
+        # Header with class count
+        unique_classes = len(class_summary)
+        total_detections = sum(data['count'] for data in class_summary.values())
+        header_label = QLabel(f"Detections ({total_detections} objects, {unique_classes} classes)")
         header_label.setFont(QFont("Arial", 14, QFont.Bold))
         header_label.setStyleSheet("color: #4F1C51;")
         layout.addWidget(header_label)
         
         # Add detection table
-        table = self.create_detection_table()
+        table = self.create_detection_table(class_summary)
         layout.addWidget(table, 1)  # 1 is stretch factor
         
         # Add confirmation section if in confirmation mode
@@ -204,8 +209,37 @@ class DetectionDialog(QDialog):
         
         return panel
     
-    '''Create the table showing detection details'''
-    def create_detection_table(self):
+    '''Process the detections to group by class with frequencies and confidence ranges'''
+    def process_detections(self):
+        class_data = defaultdict(lambda: {
+            'count': 0,
+            'confidences': []
+        })
+        
+        for det in self.detections:
+            if isinstance(det, tuple) and len(det) >= 2:
+                class_name = det[0]
+                confidence = det[1]  # Assume confidence is between 0-1
+                
+                # Update class data
+                class_data[class_name]['count'] += 1
+                class_data[class_name]['confidences'].append(confidence)
+        
+        # Calculate min-max ranges
+        for class_name, data in class_data.items():
+            if data['confidences']:
+                data['min_conf'] = min(data['confidences'])
+                data['max_conf'] = max(data['confidences'])
+                data['avg_conf'] = sum(data['confidences']) / len(data['confidences'])
+            else:
+                data['min_conf'] = 0
+                data['max_conf'] = 0
+                data['avg_conf'] = 0
+        
+        return dict(class_data)  # Convert from defaultdict to regular dict
+    
+    '''Create the table showing detection details grouped by class'''
+    def create_detection_table(self, class_summary):
         info_frame = QFrame()
         info_frame.setFrameShape(QFrame.StyledPanel)
         info_frame.setStyleSheet('''
@@ -217,12 +251,12 @@ class DetectionDialog(QDialog):
         ''')
         info_layout = QVBoxLayout(info_frame)
         
-        if self.detections:
+        if class_summary:
             # Create table
             table = QTableWidget()
-            table.setColumnCount(2)
-            table.setHorizontalHeaderLabels(["Class", "Confidence"])
-            table.setRowCount(len(self.detections))
+            table.setColumnCount(3)
+            table.setHorizontalHeaderLabels(["Class", "Count", "Confidence Range (Avg.)"])
+            table.setRowCount(len(class_summary))
             table.setSelectionBehavior(QAbstractItemView.SelectRows)
             table.setAlternatingRowColors(True)
             table.setShowGrid(False)
@@ -230,9 +264,12 @@ class DetectionDialog(QDialog):
             
             # Configure header
             header = table.horizontalHeader()
-            header.setSectionResizeMode(0, QHeaderView.Stretch)
-            header.setSectionResizeMode(1, QHeaderView.Stretch)
-            header.setDefaultAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+            header.setSectionResizeMode(0, QHeaderView.Stretch)  
+            header.setSectionResizeMode(1, QHeaderView.Fixed)   
+            header.setSectionResizeMode(2, QHeaderView.Stretch)  
+            
+            # Set explicit width for frequency column
+            table.setColumnWidth(1, 60)
             
             # Hide row numbers
             table.verticalHeader().setVisible(False)
@@ -247,6 +284,7 @@ class DetectionDialog(QDialog):
                 }
                 QTableWidget::item {
                     border-bottom: 1px solid #f0f0f0;
+                    padding: 4px;
                 }
                 QTableWidget::item:selected {
                     background-color: #F1E4F3;
@@ -262,52 +300,68 @@ class DetectionDialog(QDialog):
                 }
             ''')
             
-            for i, det in enumerate(self.detections):
-                if isinstance(det, tuple) and len(det) >= 2:
-                    class_name = det[0]
-                    confidence = det[1]  # Assume confidence is between 0-1
-                    
-                    # Add class name
-                    class_item = QTableWidgetItem(class_name)
-                    table.setItem(i, 0, class_item)
-                    
-                    # Add confidence as progress bar
-                    conf_widget = QWidget()
-                    conf_layout = QHBoxLayout(conf_widget)
-                    conf_layout.setContentsMargins(4, 2, 4, 2)
-                    
-                    # Get color based on class
-                    qt_color = self.get_class_color(class_name)
-                    
-                    # Create progress bar
-                    progress = QProgressBar()
-                    progress.setRange(0, 100)
-                    confidence_value = int(confidence * 100)  # Convert to percentage
-                    progress.setValue(confidence_value)
-                    progress.setTextVisible(True)
-                    progress.setFormat(f"{confidence:.2f}")
-                    
-                    # Apply the class color to the progress bar
-                    progress.setStyleSheet(f'''
-                        QProgressBar {{
-                            border: none;
-                            border-radius: 2px;
-                            background-color: #f0f0f0;
-                            height: 16px;
-                            text-align: center;
-                        }}
-                        QProgressBar::chunk {{
-                            background-color: {qt_color};
-                            border-radius: 2px;
-                        }}
-                    ''')
-                    
-                    conf_layout.addWidget(progress)
-                    table.setCellWidget(i, 1, conf_widget)
+            # Sort classes by frequency (descending order)
+            sorted_classes = sorted(
+                class_summary.items(), 
+                key=lambda x: x[1]['count'], 
+                reverse=True
+            )
+            
+            for i, (class_name, data) in enumerate(sorted_classes):
+                # Add class name
+                class_item = QTableWidgetItem(class_name)
+                class_item.setTextAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+                table.setItem(i, 0, class_item)
+                
+                # Add count/frequency
+                count_item = QTableWidgetItem(str(data['count']))
+                count_item.setTextAlignment(Qt.AlignCenter)
+                table.setItem(i, 1, count_item)
+                
+                # Add confidence range widget
+                conf_widget = QWidget()
+                conf_layout = QHBoxLayout(conf_widget)
+                conf_layout.setContentsMargins(4, 2, 4, 2)
+                
+                # Get color based on class
+                qt_color = self.get_class_color(class_name)
+                
+                # Create progress bar showing the range
+                progress = QProgressBar()
+                progress.setRange(0, 100)
+                
+                # Calculate midpoint to use for the progress bar value
+                progress_value = int(data['avg_conf'] * 100)
+                progress.setValue(progress_value)
+                
+                # Format the range text including average
+                min_conf = data['min_conf']
+                max_conf = data['max_conf']
+                avg_conf = data['avg_conf']
+                if min_conf == max_conf:
+                    range_text = f"{min_conf:.2f} ({avg_conf:.2f})"
                 else:
-                    # Handle unexpected format
-                    table.setItem(i, 0, QTableWidgetItem("Unknown"))
-                    table.setItem(i, 1, QTableWidgetItem("N/A"))
+                    range_text = f"{min_conf:.2f} - {max_conf:.2f} ({avg_conf:.2f})"
+                progress.setFormat(range_text)
+                progress.setTextVisible(True)
+                
+                # Apply the class color to the progress bar
+                progress.setStyleSheet(f'''
+                    QProgressBar {{
+                        border: none;
+                        border-radius: 2px;
+                        background-color: #f0f0f0;
+                        height: 16px;
+                        text-align: center;
+                    }}
+                    QProgressBar::chunk {{
+                        background-color: {qt_color};
+                        border-radius: 2px;
+                    }}
+                ''')
+                
+                conf_layout.addWidget(progress)
+                table.setCellWidget(i, 2, conf_widget)
             
             info_layout.addWidget(table)
         else:

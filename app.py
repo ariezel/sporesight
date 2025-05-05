@@ -18,13 +18,12 @@ class MainWindow(QMainWindow):
     
     title = "SporeSight"
 
-    def __init__(self, model_name, server_url, image_path="./test/images/0020.jpg", stream_url="rtsp://192.168.7.1:554/axis-media/media.amp?streamprofile=Quality"):
+    def __init__(self, model_name, image_path="./test/images/0020.jpg", stream_url="0"):
         super().__init__() 
 
         # Initialize class attributes
         self.model_name = model_name
         self.image_path = image_path
-        self.server_url = server_url
         self.stream_url = stream_url
         self.detection_history = []
         self.max_history = 20
@@ -165,9 +164,9 @@ class MainWindow(QMainWindow):
         self.ui.config_desc.setWordWrap(True)
         
         # Camera configuration section
-        self.ui.config_camera_label.setText('Camera RTSP Link')
-        self.ui.config_camera_lineedit.setText(self.stream_url)
-        self.ui.config_camera_btn.setText('Confirm')
+        self.ui.config_camera_label.setText('ONNX Model Path')
+        self.ui.config_camera_lineedit.setText(self.model_name)
+        self.ui.config_camera_btn.setText('Browse')
         self.ui.config_camera_btn.setCursor(Qt.PointingHandCursor)
         
         # Add config page to stacked widget
@@ -215,8 +214,7 @@ class MainWindow(QMainWindow):
     def init_camera_thread(self):
         # Create camera thread if needed
         if not self.camera_thread:
-            self.camera_thread = CameraThread(self.model_name, self.stream_url)
-            
+            self.camera_thread = CameraThread(self.stream_url)
             self.camera_thread.imageUpdate.connect(self.update_camera_image)
     
     ''' Restart the camera thread with new settings '''
@@ -237,11 +235,12 @@ class MainWindow(QMainWindow):
     def on_detect_clicked(self):
         temp_image_path = "./temp_capture.jpg"
         result_temp_path = "./temp_result.jpg"
+        test_image_path = "./test/images/0050.jpg"
         
         try:
             # Check if detector is initialized
             if not self.detector:
-                self.detector = YoloDetector(self.model_name, self.server_url)
+                self.detector = YoloDetector(self.model_name)
                 # Get class names from detector if available
                 if hasattr(self.detector, 'get_class_names'):
                     self.class_names = self.detector.get_class_names()
@@ -283,27 +282,26 @@ class MainWindow(QMainWindow):
                 print(f"Camera error: {str(cam_error)}")
                 ret = False
             
-            if not ret or frame is None:
-                QMessageBox.warning(self, "Camera Error", "Could not capture frame from camera.")
-                return
-            
-            # Save the captured frame to a temporary file
-            cv2.imwrite(temp_image_path, frame)
+            # Save the captured frame to a temporary file if successful
+            if ret and frame is not None:
+                cv2.imwrite(temp_image_path, frame)
+                active_image_path = temp_image_path
+                print(f"Using captured camera frame: {os.path.abspath(temp_image_path)}")
+            else:
+                print(f"Camera capture failed, using test image: {os.path.abspath(test_image_path)}")
             
             self.ui.feed_progressbar.setValue(30)
             QApplication.processEvents()
             
-            # Verify file was saved
-            if not os.path.exists(temp_image_path):
-                QMessageBox.warning(self, "File Error", "Could not save temporary image.")
+            # Verify file exists
+            if not os.path.exists(active_image_path):
+                QMessageBox.warning(self, "File Error", f"Image file not found: {active_image_path}")
                 return
             
-            # Log for debugging
-            print(f"Processing image: {os.path.abspath(temp_image_path)}")
+            # Process the image with the active image path (either temp_image_path or test_image_path)
+            print(f"Processing image: {os.path.abspath(active_image_path)}")
             
-            # Process the image
-            
-            result_image, detections = self.detector.process_image(temp_image_path)
+            result_image, detections = self.detector.process_image(test_image_path)
         
             if not detections:
                 print("No detections found.")
