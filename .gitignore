@@ -1,4 +1,4 @@
 __pycache__/
-models/
-detections/
+models/*
+detections/*
 test/
