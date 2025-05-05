@@ -80,7 +80,7 @@ class Ui_MainWindow(object):
         self.config_page.setObjectName(u"config_page")
         self.config_section_frame = QFrame(self.config_page)
         self.config_section_frame.setObjectName(u"config_section_frame")
-        self.config_section_frame.setGeometry(QRect(0, 0, 1121, 841))
+        self.config_section_frame.setGeometry(QRect(0, 0, 471, 177))
         self.config_section_frame.setFrameShape(QFrame.StyledPanel)
         self.config_section_frame.setFrameShadow(QFrame.Raised)
         self.verticalLayout = QVBoxLayout(self.config_section_frame)
