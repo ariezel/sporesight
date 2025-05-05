@@ -1,6 +1,9 @@
 import cv2
 import numpy as np
-import tritonclient.grpc as grpcclient
+import onnxruntime as ort
+import os
+import sys
+from pathlib import Path
 
 from resources import COLORS
 
@@ -25,52 +28,57 @@ def load_class_names():
         print(f"Error loading class names: {str(e)}. Using default class names.")
         return default_class_names
 
-''' Class to handle YOLO object detection using Triton Inference Server '''
+''' Class to handle YOLO object detection using ONNX Runtime '''
 class YoloDetector:
-    def __init__(self, model_name, server_url='localhost:8001'):
+    def __init__(self, model_path):
         '''
-        Initialize detector with model name and server URL
+        Initialize detector with ONNX model path
         
         Parameters:
-        - model_name: Name of the YOLO model on Triton server
-        - server_url: URL of the Triton Inference Server
+        - model_path: Path to the ONNX model file. If None, will look in default locations.
         '''
-        self.model_name = model_name
-        self.server_url = server_url
-        self.triton_client = None
-        self.expected_image_shape = None
         self.class_names = load_class_names()
         self.colors = COLORS
+        self.onnx_session = None
+        self.expected_image_shape = None
+
+
+        # Save model path and initialize ONNX Runtime session
+        self.model_path = model_path
+
+        if not model_path or not os.path.exists(model_path):
+            raise FileNotFoundError(f"ONNX model not found. Please provide a valid model path.")
         
-        # Initialize Triton client
-        self.connect_to_triton()
+        self.load_onnx_model()
     
-    ''' Connect to the Triton Inference Server '''
-    def connect_to_triton(self):
+    ''' Load the ONNX model '''
+    def load_onnx_model(self):
         try:
-            keepalive_options = grpcclient.KeepAliveOptions(
-                keepalive_time_ms=2**31 - 1,
-                keepalive_timeout_ms=20000,
-                keepalive_permit_without_calls=False,
-                http2_max_pings_without_data=2
+            print(f"Loading ONNX model from {self.model_path}")
+            # Create ONNX Runtime session with optimizations
+            self.onnx_session = ort.InferenceSession(
+                self.model_path, 
+                providers=['CUDAExecutionProvider', 'CPUExecutionProvider']
             )
             
-            self.triton_client = grpcclient.InferenceServerClient(
-                url=self.server_url,
-                verbose=False,
-                keepalive_options=keepalive_options
-            )
+            # Get model input shape from model metadata
+            model_inputs = self.onnx_session.get_inputs()
+            if model_inputs and len(model_inputs) > 0:
+                # Assuming first input is the image
+                input_shape = model_inputs[0].shape
+                # YOLO models typically use format [batch, channels, height, width]
+                if len(input_shape) == 4:
+                    self.expected_image_shape = (input_shape[2], input_shape[3])
+                    print(f"Model expects input shape: {self.expected_image_shape}")
+                else:
+                    # Default to 640x640 if shape cannot be determined
+                    self.expected_image_shape = (640, 640)
+                    print(f"Could not determine model input shape, using default: {self.expected_image_shape}")
             
-            if self.triton_client.is_server_live():
-                print("✅ Triton server is live!")
-                # Get model metadata to determine expected shape
-                model_metadata = self.triton_client.get_model_metadata(self.model_name)
-                self.expected_image_shape = model_metadata.inputs[0].shape[-2:]
-            else:
-                print("❌ Triton server is not responding.")
-                
+            print("✅ ONNX model loaded successfully!")
+            
         except Exception as e:
-            print(f"Triton connection failed: {str(e)}")
+            print(f"Error loading ONNX model: {str(e)}")
             raise
     
     ''' Process Image '''
@@ -85,11 +93,10 @@ class YoloDetector:
         - result_image: Image with bounding boxes drawn
         - detections: List of detection tuples (class_name, confidence, box)
         '''
-        # Check if Triton client is connected
-        if not self.triton_client or not self.expected_image_shape:
-            self.connect_to_triton()
+        # Check if ONNX session is loaded
+        if not self.onnx_session or not self.expected_image_shape:
+            raise RuntimeError("ONNX model not initialized properly")
         
-        # TODO connect to camera
         # Read and preprocess image
         original_image = cv2.imread(image_path)
         if original_image is None:
@@ -107,7 +114,7 @@ class YoloDetector:
         input_image = self.preprocess_image(original_image, expected_width, expected_height)
         
         # Get model predictions
-        detections = self.infer_with_triton(input_image)
+        detections = self.infer_with_onnx(input_image)
         
         # Process predictions
         boxes, scores, class_ids = self.process_yolo_output(detections, self.scale)
@@ -160,10 +167,10 @@ class YoloDetector:
         
         return batched
     
-    ''' Inference to Triton Server '''
-    def infer_with_triton(self, input_image):
+    ''' Inference with ONNX Runtime '''
+    def infer_with_onnx(self, input_image):
         '''
-        Send inference request to Triton server
+        Run inference using ONNX Runtime
         
         Parameters:
         - input_image: preprocessed image tensor
@@ -172,30 +179,23 @@ class YoloDetector:
         - detection results from the model
         '''
         try:
-            # Prepare input tensor
-            inputs = []
-            inputs.append(grpcclient.InferInput("images", input_image.shape, "FP32"))
-            inputs[0].set_data_from_numpy(input_image)
+            # Get input name from model
+            input_name = self.onnx_session.get_inputs()[0].name
             
-            # Specify output tensor
-            outputs = []
-            outputs.append(grpcclient.InferRequestedOutput("output0"))
+            # Create input dictionary
+            input_dict = {input_name: input_image}
             
-            # Send inference request
-            response = self.triton_client.infer(
-                model_name=self.model_name,
-                inputs=inputs,
-                outputs=outputs
-            )
+            # Run inference
+            outputs = self.onnx_session.run(None, input_dict)
             
-            # Get output tensor
-            return response.as_numpy("output0")
+            # Return first output (assuming that's the detection tensor)
+            return outputs[0]
             
         except Exception as e:
-            print(f"Inference error: {str(e)}")
+            print(f"ONNX inference error: {str(e)}")
             raise
     
-    ''' Process output retrieved from server '''
+    ''' Process output retrieved from model '''
     def process_yolo_output(self, detections, scale, conf_threshold=0.25, iou_threshold=0.45):
         '''
         Process YOLO output tensor into bounding boxes, scores, and class IDs
@@ -308,4 +308,3 @@ class YoloDetector:
 
         # Put text on top
         cv2.putText(img, label, (x, y - 5), font, font_scale, (255, 255, 255), thickness)  # white text
-    
