@@ -1,8 +1,18 @@
-import argparse, sys
+import argparse, sys, os
 from pathlib import Path
 from PySide6.QtWidgets import QApplication
 from app import MainWindow
-from resources import STYLE_QSS 
+from resources import STYLE_QSS
+
+def resource_path(relative_path):
+    """Get absolute path to resource, works for dev and for PyInstaller"""
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -13,11 +23,25 @@ if __name__ == "__main__":
 
     app = QApplication(sys.argv)
 
-    # Load QSS file safely
-    style_path = Path(STYLE_QSS)
-    if style_path.exists():
-        with style_path.open("r") as style_file:
+    # Try to read the QSS file content
+    try:
+        # Determine if running as bundled app or in development
+        if getattr(sys, 'frozen', False):
+            # If frozen (PyInstaller bundle)
+            style_path = os.path.join(sys._MEIPASS, "ui", "style.qss")
+        else:
+            # In development
+            style_path = STYLE_QSS
+        
+        print(f"Loading style from: {style_path}")  # Debug info
+        
+        # Read and apply stylesheet
+        with open(style_path, "r", encoding="utf-8") as style_file:
             app.setStyleSheet(style_file.read())
+            
+    except Exception as e:
+        print(f"Error loading style file: {e}")
+        # Continue without the stylesheet
 
     root = MainWindow(args.model_name, args.url)
     root.showMaximized()

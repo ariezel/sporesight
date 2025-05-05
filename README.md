@@ -25,11 +25,11 @@ pip install -r requirements.txt
 [4] Run the following commands on the terminal.
 
 ```
-docker build -t triton-with-opencv .
+docker build -t sporesight .
 ```
 
 ```
-docker run --rm -p 8000:8000 -p 8001:8001 -p 8002:8002 -v ${PWD}/model_repository:/models triton-with-opencv tritonserver --model-repository=/models --log-verbose=1 
+docker run --rm -p 8000:8000 -p 8001:8001 -p 8002:8002 -v ${PWD}/model_repository:/models sporesight tritonserver --model-repository=/models --log-verbose=1 
 ```
 
 [!] This is the XPCAM1080PHB RTSP Link. This is hardcoded in the application.
