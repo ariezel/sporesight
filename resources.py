@@ -186,9 +186,9 @@ ABOUT = [
 CAMERA_DESCRIPTION = """
 1) Click the START button to view the camera feed
 
-2) The DETECT button will be responsible for sending an image to the server for an inference
-    a) DETECT will temporarily stop the feed and the user can review the resulting detections
-    b) The user has the choice to save or discard the resulting image image
+2) The DETECT button will be used for image analysis
+   - The camera will take a snapshot of the current frame and analyze it using the ONNX model
+    - The results will be displayed in a dialog and in the analytics page
 
 3) Press START FEED again to continue your search
 """

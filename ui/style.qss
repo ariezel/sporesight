@@ -259,7 +259,7 @@ QLineEdit:hover {
 #config_camera_lineedit,
 #config_cfscore_lineedit,
 #config_classes_lineedit {
-  color: black;
+  color: gray;
   background-color: white;
   font-size: 14px;
 }

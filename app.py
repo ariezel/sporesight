@@ -191,27 +191,28 @@ class MainWindow(QMainWindow):
 
         # Model configuration section
         self.ui.config_camera_label.setText('ONNX Model Path')
-        self.ui.config_camera_lineedit.setText(self.model_name)
+        self.ui.config_camera_lineedit.setText("Select an ONNX model file (e.g. yolov5.onnx)")
+        self.ui.config_camera_lineedit.setReadOnly(True)
         self.ui.config_camera_btn.setText('Browse')
         self.ui.config_camera_btn.setCursor(Qt.PointingHandCursor)
-        self.ui.config_camera_lineedit.setReadOnly(True)
 
         # Classes configuration
         self.ui.config_classes_label.setText('Classes.txt Path')
-        self.ui.config_classes_lineedit.setText(self.classfile_path)
+        self.ui.config_classes_lineedit.setText("Select a text file containing class names (e.g. classes.txt)")
+        self.ui.config_classes_lineedit.setReadOnly(True)
         self.ui.config_classes_btn.setText('Browse')
         self.ui.config_classes_btn.setCursor(Qt.PointingHandCursor)
-        self.ui.config_classes_lineedit.setReadOnly(True)
 
         # Confidence Score configuration section
         self.ui.config_cfscore_label.setText('Confidence Score')
         self.ui.config_cfscore_lineedit.setText(self.conf_threshold)
+        self.ui.config_cfscore_lineedit.setAlignment(Qt.AlignCenter) 
+        self.ui.config_cfscore_lineedit.setReadOnly(True)
         self.ui.config_cfscore_btn_add.setText('+')
         self.ui.config_cfscore_btn_add.setCursor(Qt.PointingHandCursor)
         self.ui.config_cfscore_btn_sub.setText('-')
         self.ui.config_cfscore_btn_sub.setCursor(Qt.PointingHandCursor)
 
-        self.ui.config_cfscore_lineedit.setAlignment(Qt.AlignCenter) 
 
         # Add config page to stacked widget
         self.ui.pages.addWidget(self.ui.config_section_frame)   # Initialize the UI class
