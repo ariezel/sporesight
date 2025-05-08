@@ -38,13 +38,6 @@ class Ui_MainWindow(object):
 
         self.gridLayout.addWidget(self.maximizedmenu, 1, 2, 1, 1)
 
-        self.minimizedmenu = QListWidget(self.centralwidget)
-        self.minimizedmenu.setObjectName(u"minimizedmenu")
-        self.minimizedmenu.setMinimumSize(QSize(0, 0))
-        self.minimizedmenu.setMaximumSize(QSize(75, 16777215))
-
-        self.gridLayout.addWidget(self.minimizedmenu, 1, 1, 1, 1)
-
         self.title_frame = QFrame(self.centralwidget)
         self.title_frame.setObjectName(u"title_frame")
         self.title_frame.setFrameShape(QFrame.StyledPanel)
@@ -74,13 +67,20 @@ class Ui_MainWindow(object):
 
         self.gridLayout.addWidget(self.title_frame, 0, 0, 1, 3)
 
+        self.minimizedmenu = QListWidget(self.centralwidget)
+        self.minimizedmenu.setObjectName(u"minimizedmenu")
+        self.minimizedmenu.setMinimumSize(QSize(0, 0))
+        self.minimizedmenu.setMaximumSize(QSize(75, 16777215))
+
+        self.gridLayout.addWidget(self.minimizedmenu, 1, 1, 1, 1)
+
         self.pages = QStackedWidget(self.centralwidget)
         self.pages.setObjectName(u"pages")
         self.config_page = QWidget()
         self.config_page.setObjectName(u"config_page")
         self.config_section_frame = QFrame(self.config_page)
         self.config_section_frame.setObjectName(u"config_section_frame")
-        self.config_section_frame.setGeometry(QRect(0, 0, 471, 177))
+        self.config_section_frame.setGeometry(QRect(0, 0, 1121, 841))
         self.config_section_frame.setFrameShape(QFrame.StyledPanel)
         self.config_section_frame.setFrameShadow(QFrame.Raised)
         self.verticalLayout = QVBoxLayout(self.config_section_frame)
@@ -90,6 +90,7 @@ class Ui_MainWindow(object):
         self.config_title_frame = QFrame(self.config_section_frame)
         self.config_title_frame.setObjectName(u"config_title_frame")
         self.config_title_frame.setMaximumSize(QSize(16777215, 80))
+        self.config_title_frame.setStyleSheet(u"border: none;")
         self.config_title_frame.setFrameShape(QFrame.StyledPanel)
         self.config_title_frame.setFrameShadow(QFrame.Raised)
         self.horizontalLayout_3 = QHBoxLayout(self.config_title_frame)
@@ -138,9 +139,7 @@ class Ui_MainWindow(object):
         self.config_body_files.setFrameShape(QFrame.StyledPanel)
         self.config_body_files.setFrameShadow(QFrame.Raised)
         self.verticalLayout_3 = QVBoxLayout(self.config_body_files)
-        self.verticalLayout_3.setSpacing(10)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
-        self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
         self.config_camera_frame = QFrame(self.config_body_files)
         self.config_camera_frame.setObjectName(u"config_camera_frame")
         self.config_camera_frame.setFrameShape(QFrame.StyledPanel)
@@ -187,6 +186,88 @@ class Ui_MainWindow(object):
 
 
         self.verticalLayout_3.addWidget(self.config_camera_frame)
+
+        self.config_camera_frame_3 = QFrame(self.config_body_files)
+        self.config_camera_frame_3.setObjectName(u"config_camera_frame_3")
+        self.config_camera_frame_3.setFrameShape(QFrame.StyledPanel)
+        self.config_camera_frame_3.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_20 = QHBoxLayout(self.config_camera_frame_3)
+        self.horizontalLayout_20.setSpacing(0)
+        self.horizontalLayout_20.setObjectName(u"horizontalLayout_20")
+        self.horizontalLayout_20.setContentsMargins(0, 0, 0, 0)
+        self.config_camera_label_3 = QLabel(self.config_camera_frame_3)
+        self.config_camera_label_3.setObjectName(u"config_camera_label_3")
+        sizePolicy.setHeightForWidth(self.config_camera_label_3.sizePolicy().hasHeightForWidth())
+        self.config_camera_label_3.setSizePolicy(sizePolicy)
+
+        self.horizontalLayout_20.addWidget(self.config_camera_label_3, 0, Qt.AlignRight)
+
+        self.config_camerabtn_frame_3 = QFrame(self.config_camera_frame_3)
+        self.config_camerabtn_frame_3.setObjectName(u"config_camerabtn_frame_3")
+        sizePolicy1.setHeightForWidth(self.config_camerabtn_frame_3.sizePolicy().hasHeightForWidth())
+        self.config_camerabtn_frame_3.setSizePolicy(sizePolicy1)
+        self.config_camerabtn_frame_3.setFrameShape(QFrame.StyledPanel)
+        self.config_camerabtn_frame_3.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_21 = QHBoxLayout(self.config_camerabtn_frame_3)
+        self.horizontalLayout_21.setSpacing(0)
+        self.horizontalLayout_21.setObjectName(u"horizontalLayout_21")
+        self.horizontalLayout_21.setContentsMargins(0, 0, 0, 0)
+        self.config_camera_lineedit_3 = QLineEdit(self.config_camerabtn_frame_3)
+        self.config_camera_lineedit_3.setObjectName(u"config_camera_lineedit_3")
+
+        self.horizontalLayout_21.addWidget(self.config_camera_lineedit_3)
+
+        self.config_camera_btn_3 = QPushButton(self.config_camerabtn_frame_3)
+        self.config_camera_btn_3.setObjectName(u"config_camera_btn_3")
+
+        self.horizontalLayout_21.addWidget(self.config_camera_btn_3)
+
+
+        self.horizontalLayout_20.addWidget(self.config_camerabtn_frame_3, 0, Qt.AlignVCenter)
+
+
+        self.verticalLayout_3.addWidget(self.config_camera_frame_3)
+
+        self.config_camera_frame_2 = QFrame(self.config_body_files)
+        self.config_camera_frame_2.setObjectName(u"config_camera_frame_2")
+        self.config_camera_frame_2.setFrameShape(QFrame.StyledPanel)
+        self.config_camera_frame_2.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_18 = QHBoxLayout(self.config_camera_frame_2)
+        self.horizontalLayout_18.setSpacing(0)
+        self.horizontalLayout_18.setObjectName(u"horizontalLayout_18")
+        self.horizontalLayout_18.setContentsMargins(0, 0, 0, 0)
+        self.config_camera_label_2 = QLabel(self.config_camera_frame_2)
+        self.config_camera_label_2.setObjectName(u"config_camera_label_2")
+        sizePolicy.setHeightForWidth(self.config_camera_label_2.sizePolicy().hasHeightForWidth())
+        self.config_camera_label_2.setSizePolicy(sizePolicy)
+
+        self.horizontalLayout_18.addWidget(self.config_camera_label_2, 0, Qt.AlignRight)
+
+        self.config_camerabtn_frame_2 = QFrame(self.config_camera_frame_2)
+        self.config_camerabtn_frame_2.setObjectName(u"config_camerabtn_frame_2")
+        sizePolicy1.setHeightForWidth(self.config_camerabtn_frame_2.sizePolicy().hasHeightForWidth())
+        self.config_camerabtn_frame_2.setSizePolicy(sizePolicy1)
+        self.config_camerabtn_frame_2.setFrameShape(QFrame.StyledPanel)
+        self.config_camerabtn_frame_2.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_19 = QHBoxLayout(self.config_camerabtn_frame_2)
+        self.horizontalLayout_19.setSpacing(0)
+        self.horizontalLayout_19.setObjectName(u"horizontalLayout_19")
+        self.horizontalLayout_19.setContentsMargins(0, 0, 0, 0)
+        self.config_camera_lineedit_2 = QLineEdit(self.config_camerabtn_frame_2)
+        self.config_camera_lineedit_2.setObjectName(u"config_camera_lineedit_2")
+
+        self.horizontalLayout_19.addWidget(self.config_camera_lineedit_2)
+
+        self.config_camera_btn_2 = QPushButton(self.config_camerabtn_frame_2)
+        self.config_camera_btn_2.setObjectName(u"config_camera_btn_2")
+
+        self.horizontalLayout_19.addWidget(self.config_camera_btn_2)
+
+
+        self.horizontalLayout_18.addWidget(self.config_camerabtn_frame_2, 0, Qt.AlignVCenter)
+
+
+        self.verticalLayout_3.addWidget(self.config_camera_frame_2)
 
 
         self.verticalLayout_2.addWidget(self.config_body_files, 0, Qt.AlignTop)
@@ -636,7 +717,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.pages.setCurrentIndex(1)
+        self.pages.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -652,6 +733,10 @@ class Ui_MainWindow(object):
         self.config_desc.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
         self.config_camera_label.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
         self.config_camera_btn.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
+        self.config_camera_label_3.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
+        self.config_camera_btn_3.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
+        self.config_camera_label_2.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
+        self.config_camera_btn_2.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
         self.feed_title.setText("")
         self.feed_label.setText("")
         self.feed_desc.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))

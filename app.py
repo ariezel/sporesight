@@ -88,7 +88,7 @@ class MainWindow(QMainWindow):
         self.ui.minimizedmenu.currentRowChanged.connect(self.update_menu_icons)
 
         # Configuration page connections
-        self.ui.config_camera_btn.clicked.connect(self.save_camera_config)
+        self.ui.config_camera_btn.clicked.connect(self.open_model_file)
 
         # Feed page connections
         self.ui.feed_detect_btn.clicked.connect(self.on_detect_clicked)
@@ -172,10 +172,14 @@ class MainWindow(QMainWindow):
         # Add config page to stacked widget
         self.ui.pages.addWidget(self.ui.config_section_frame)   # Initialize the UI class
     
-    ''' Save camera configuration '''
-    @Slot()
-    def save_camera_config(self):
-        print("Saved clicked")
+    def open_model_file(self):
+        '''Open file dialog to select ONNX model file'''
+        options = QFileDialog.Options()
+        file_name, _ = QFileDialog.getOpenFileName(self, "Select ONNX Model File", "", "ONNX Files (*.onnx);;All Files (*)", options=options)
+        
+        if file_name:
+            self.ui.config_camera_lineedit.setText(file_name)
+            self.model_name = file_name
 
     ''' Edit Feed UI '''
     def init_camera_page(self, option):
@@ -216,10 +220,6 @@ class MainWindow(QMainWindow):
         if not self.camera_thread:
             self.camera_thread = CameraThread(self.stream_url)
             self.camera_thread.imageUpdate.connect(self.update_camera_image)
-    
-    ''' Restart the camera thread with new settings '''
-    def restart_camera_thread(self):
-        print("Restart camera")
 
     '''Update the camera feed image'''
     @Slot(object)

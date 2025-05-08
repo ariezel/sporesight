@@ -166,7 +166,11 @@ QLineEdit:hover {
 #config_section_frame,
 #feed_section_frame,
 #analytics_section_frame,
-#about_section_frame {
+#about_section_frame,
+#config_title_frame,
+#feed_title_frame,
+#analytics_title_frame,
+#about_title_frame {
   border: none;
   background-color: #f7f7f7;
 }

@@ -42,7 +42,6 @@ class YoloDetector:
         self.onnx_session = None
         self.expected_image_shape = None
 
-
         # Save model path and initialize ONNX Runtime session
         self.model_path = model_path
 
@@ -158,13 +157,11 @@ class YoloDetector:
 
         # Resize image to target dimensions
         resized = cv2.resize(image, (target_width, target_height))
-        # Normalize pixel values to [0,1]
         normalized = resized.astype(np.float32) / 255.0
         # Convert to channel-first format (for PyTorch/ONNX models)
         chw = normalized.transpose(2, 0, 1)
         # Add batch dimension
         batched = np.expand_dims(chw, axis=0)
-        
         return batched
     
     ''' Inference with ONNX Runtime '''
