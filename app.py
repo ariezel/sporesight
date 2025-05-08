@@ -28,12 +28,13 @@ class MainWindow(QMainWindow):
         self.detection_history = []
         self.max_history = 20
         self.camera_thread = None
-        self.triton_client = None
         self.detector = None
         self.detection_manager = DetectionManager()
         self.colors = COLORS
         self.class_names = load_class_names()
         self.conf_threshold = "0.25"
+        self.temp_image_path = "./temp_capture.jpg"
+        self.result_temp_path = "./temp_result.jpg"
 
         # Set window properties
         self.setWindowTitle(self.title)
@@ -90,6 +91,9 @@ class MainWindow(QMainWindow):
 
         # Configuration page connections
         self.ui.config_camera_btn.clicked.connect(self.open_model_file)
+        self.ui.config_cfscore_btn_add.clicked.connect(self.increment_confidence)
+        self.ui.config_cfscore_btn_sub.clicked.connect(self.decrement_confidence)
+        self.ui.config_cfscore_lineedit.textChanged.connect(self.update_confidence_from_text)
 
         # Feed page connections
         self.ui.feed_detect_btn.clicked.connect(self.on_detect_clicked)
@@ -218,9 +222,28 @@ class MainWindow(QMainWindow):
         file_name, _ = QFileDialog.getOpenFileName(self, "Select Image File", "", "Image Files (*.jpg *.jpeg *.png);;All Files (*)", options=options)
         
         if file_name:
-            self.image_path = file_name
+            try:
+                QApplication.setOverrideCursor(Qt.WaitCursor)
+                self.image_path = file_name
+                self.detector = YoloDetector(self.model_name, self.conf_threshold)
+                result_image, detections = self.detector.process_image(self.image_path)
+                # Save the result image to temporary file first
+                cv2.imwrite(self.result_temp_path, result_image)
+                QApplication.restoreOverrideCursor()  # Restore cursor before dialog
+                save_confirmed = self.show_detection_confirmation_dialog(self.result_temp_path, detections)
 
-        self.on_detect_clicked(False)
+                if save_confirmed:
+                    image_path = self.save_detection_results(result_image, detections)
+                    self.update_analytics_page()
+                    QMessageBox.information(self, "Detection Saved", f"Detection has been saved successfully.")
+                    print(f"Detection saved to: {image_path}")
+            except Exception as e:
+                print(f"Error processing image: {str(e)}")
+                QMessageBox.critical(self, "Processing Error", f"An error occurred: {str(e)}")
+            finally:
+                # Make sure cursor is restored even if there was an error
+                if QApplication.overrideCursor():
+                    QApplication.restoreOverrideCursor()
 
     ''' Edit Feed UI '''
     def init_camera_page(self, option):
@@ -241,7 +264,7 @@ class MainWindow(QMainWindow):
         
         # Set tooltips
         self.ui.feed_detect_btn.setToolTip("Start the detection process on the live feed")
-        self.ui.feed_stop_btn.setToolTip("Stop the camera feed")
+        self.ui.feed_stop_btn.setToolTip("Toggle the camera feed")
         self.ui.feed_title.setToolTip("This section displays the live camera feed")
         
         # Set initial button styles
@@ -259,9 +282,34 @@ class MainWindow(QMainWindow):
     def init_camera_thread(self):
         # Create camera thread if needed
         if not self.camera_thread:
+            print(self.stream_url)
             self.camera_thread = CameraThread(self.stream_url)
+            print(self.camera_thread)
             self.camera_thread.imageUpdate.connect(self.update_camera_image)
 
+    ''' Toggle camera feed on/off '''
+    @Slot()
+    def toggle_camera_feed(self):
+        self.feed_stop_active = not self.feed_stop_active
+        print(f"Camera feed toggle, active={not self.feed_stop_active}")
+        
+        if self.feed_stop_active:
+            # Stop the feed
+            print("Stopping camera thread...")
+            if self.camera_thread and self.camera_thread.isRunning():
+                self.camera_thread.stop()
+            self.ui.feed_stop_btn.setText("Start Feed")
+            self.ui.feed_stop_btn.setStyleSheet(COMPLETED_STYLE)
+        else:
+            # Start the feed
+            print("Starting camera thread...")
+            if not self.camera_thread:
+                self.init_camera_thread()
+            self.camera_thread.start()
+            print(f"Thread running: {self.camera_thread.isRunning()}")
+            self.ui.feed_stop_btn.setText("Stop Feed")
+            self.ui.feed_stop_btn.setStyleSheet(DEFAULT_STYLE)
+    
     '''Update the camera feed image'''
     @Slot(object)
     def update_camera_image(self, img):
@@ -273,17 +321,7 @@ class MainWindow(QMainWindow):
         self.ui.feed_label.setPixmap(QPixmap.fromImage(scaled_img))
     
     ''' Process detection on the current frame '''
-    def on_detect_clicked(self, is_live_img=True):
-        """
-        Process detection on either a live camera frame or a selected image file
-        
-        Args:
-            is_live_img (bool): If True, detect from live camera feed. If False, use selected image file.
-        """
-        temp_image_path = "./temp_capture.jpg"
-        result_temp_path = "./temp_result.jpg"
-        test_image_path = "./test/images/0050.jpg"  # Fallback test image
-
+    def on_detect_clicked(self):
         try:
             # Check if detector is initialized
             if not self.detector:
@@ -292,17 +330,10 @@ class MainWindow(QMainWindow):
                 if hasattr(self.detector, 'get_class_names'):
                     self.class_names = self.detector.get_class_names()
             
-            # Check if we have a valid source image
-            if is_live_img:
-                # We need a running camera for live detection
-                if not self.camera_thread or not self.camera_thread.isRunning():
-                    QMessageBox.warning(self, "Camera Error", "Please start the camera feed first before detecting.")
-                    return
-            else:
-                # For file-based detection, we need a selected image path
-                if not self.image_path:
-                    QMessageBox.warning(self, "Image Error", "Please select an image file to detect.")
-                    return
+            # Check if camera thread is running
+            if not self.camera_thread or not self.camera_thread.isRunning():
+                QMessageBox.warning(self, "Camera Error", "Please start the camera feed first before detecting.")
+                return
             
             # Show loading indicator - start
             self.ui.feed_detect_btn.setEnabled(False) 
@@ -312,64 +343,51 @@ class MainWindow(QMainWindow):
             self.ui.feed_progressbar.setVisible(True)
             QApplication.processEvents() 
             
-            # If detecting from live feed, pause the camera
-            if is_live_img and self.camera_thread and self.camera_thread.isRunning():
-                self.camera_thread.CameraThreadActive = False
-                
-                # Update UI to reflect paused state
-                if not self.feed_stop_active:
-                    self.feed_stop_active = True
-                    self.ui.feed_stop_btn.setText("Start Feed")
-                    self.ui.feed_stop_btn.setStyleSheet(COMPLETED_STYLE)
+            self.camera_thread.CameraThreadActive = False
             
-            # Initialize the image path to process
-            active_image_path = None
+            # Update UI to reflect paused state
+            if not self.feed_stop_active:
+                self.feed_stop_active = True
+                self.ui.feed_stop_btn.setText("Start Feed")
+                self.ui.feed_stop_btn.setStyleSheet(COMPLETED_STYLE)
             
-            # CASE 1: Live camera image detection
-            if is_live_img:
-                # Capture frame from camera
-                try:
-                    # Try to get frame from camera thread first if available
-                    if hasattr(self.camera_thread, 'get_current_frame'):
-                        frame = self.camera_thread.get_current_frame()
-                        ret = frame is not None
-                    else:
-                        # Fall back to direct camera capture
-                        camera_source = int(self.stream_url) if self.stream_url.isdigit() else self.stream_url
-                        cap = cv2.VideoCapture(camera_source)  
-                        ret, frame = cap.read()
-                        cap.release()
-                    
-                    # Save the captured frame to a temporary file if successful
-                    if ret and frame is not None:
-                        cv2.imwrite(temp_image_path, frame)
-                        active_image_path = temp_image_path
-                        print(f"Using captured camera frame: {os.path.abspath(temp_image_path)}")
-                    else:
-                        # If camera capture failed, use test image as fallback
-                        active_image_path = test_image_path
-                        print(f"Camera capture failed, using test image: {os.path.abspath(test_image_path)}")
-                except Exception as cam_error:
-                    print(f"Camera error: {str(cam_error)}")
-                    active_image_path = test_image_path
-                    print(f"Using test image due to error: {os.path.abspath(test_image_path)}")
+            # Capture frame
+            try:
+                # Try to get frame from camera thread first if available
+                if hasattr(self.camera_thread, 'get_current_frame'):
+                    frame = self.camera_thread.get_current_frame()
+                    ret = frame is not None
+                else:
+                    # Fall back to direct camera capture
+                    camera_source = int(self.stream_url) if self.stream_url.isdigit() else self.stream_url
+                    cap = cv2.VideoCapture(camera_source)  
+                    ret, frame = cap.read()
+                    cap.release()
+            except Exception as cam_error:
+                print(f"Camera error: {str(cam_error)}")
+                ret = False
             
-            # CASE 2: Selected image file detection
-            else:
-                active_image_path = self.image_path
-                print(f"Using selected image file: {os.path.abspath(active_image_path)}")
+            if not ret or frame is None:
+                QMessageBox.warning(self, "Camera Error", "Could not capture frame from camera.")
+                return
+            
+            # Save the captured frame to a temporary file
+            cv2.imwrite(self.temp_image_path, frame)
             
             self.ui.feed_progressbar.setValue(30)
             QApplication.processEvents()
             
-            # Verify file exists
-            if not os.path.exists(active_image_path):
-                QMessageBox.warning(self, "File Error", f"Image file not found: {active_image_path}")
+            # Verify file was saved
+            if not os.path.exists(self.temp_image_path):
+                QMessageBox.warning(self, "File Error", "Could not save temporary image.")
                 return
             
-            # Process the image with detector
-            print(f"Processing image: {os.path.abspath(active_image_path)}")
-            result_image, detections = self.detector.process_image(active_image_path)
+            # Log for debugging
+            print(f"Processing image: {os.path.abspath(self.temp_image_path)}")
+            
+            # Process the image
+            
+            result_image, detections = self.detector.process_image(self.temp_image_path)
         
             if not detections:
                 print("No detections found.")
@@ -379,10 +397,10 @@ class MainWindow(QMainWindow):
             QApplication.processEvents()
             
             # Save result image to temporary file
-            cv2.imwrite(result_temp_path, result_image)
+            cv2.imwrite(self.result_temp_path, result_image)
             
             # Verify result file exists
-            if not os.path.exists(result_temp_path):
+            if not os.path.exists(self.result_temp_path):
                 print("Warning: Could not save result image")
 
             self.ui.feed_progressbar.setValue(100)
@@ -390,7 +408,7 @@ class MainWindow(QMainWindow):
             # Show confirmation dialog with the detected image
             print("Showing detection confirmation dialog...")
             QApplication.setOverrideCursor(Qt.ArrowCursor)  
-            save_confirmed = self.show_detection_confirmation_dialog(result_temp_path, detections)
+            save_confirmed = self.show_detection_confirmation_dialog(self.result_temp_path, detections)
             print(f"Dialog result: {save_confirmed}")
             
             if save_confirmed:
@@ -400,6 +418,7 @@ class MainWindow(QMainWindow):
                 print(f"Detection saved to: {image_path}")
             
             QApplication.setOverrideCursor(Qt.ArrowCursor)  
+            
             
         except Exception as e:
             print(f"Detection error: {str(e)}")
@@ -418,30 +437,11 @@ class MainWindow(QMainWindow):
             
             # Clean up temporary files
             try:
-                for temp_file in [temp_image_path, result_temp_path]:
+                for temp_file in [self.temp_image_path, self.result_temp_path]:
                     if os.path.exists(temp_file):
                         os.remove(temp_file)
             except Exception as e:
                 print(f"Error removing temporary files: {str(e)}")
-
-    ''' Toggle camera feed on/off '''
-    @Slot()
-    def toggle_camera_feed(self):
-        self.feed_stop_active = not self.feed_stop_active
-        
-        if self.feed_stop_active:
-            # Stop the feed
-            if self.camera_thread and self.camera_thread.isRunning():
-                self.camera_thread.stop()
-            self.ui.feed_stop_btn.setText("Start Feed")
-            self.ui.feed_stop_btn.setStyleSheet(COMPLETED_STYLE)
-        else:
-            # Start the feed
-            if not self.camera_thread:
-                self.init_camera_thread()
-            self.camera_thread.start()
-            self.ui.feed_stop_btn.setText("Stop Feed")
-            self.ui.feed_stop_btn.setStyleSheet(DEFAULT_STYLE)
 
     ''' Save detection results and update history '''
     def save_detection_results(self, image, detection_details):
@@ -576,7 +576,7 @@ class MainWindow(QMainWindow):
                 font-weight: 700;
                 padding: 11px 20px;
                 font-size: 14px;
-                width: 130px;
+                width: 110px;
             }
             QPushButton:hover {
                 border-color: #4F1C51;
@@ -870,3 +870,53 @@ class MainWindow(QMainWindow):
     
         print("Cleanup done, accepting close event")
         event.accept()
+
+        ''' Increment confidence threshold '''
+    def increment_confidence(self):
+        try:
+            current = float(self.conf_threshold)
+            # Increment by 0.05, but don't exceed 1.0
+            new_value = min(1.0, current + 0.05)
+            self.conf_threshold = f"{new_value:.2f}"
+            self.ui.config_cfscore_lineedit.setText(self.conf_threshold)
+            print(f"Confidence threshold increased to: {self.conf_threshold}")
+            
+            # Reinitialize detector if it exists
+            if self.detector:
+                self.detector = YoloDetector(self.model_name, self.conf_threshold)
+        except ValueError:
+            print("Invalid confidence value")
+    
+    ''' Decrement confidence threshold '''
+    def decrement_confidence(self):
+        try:
+            current = float(self.conf_threshold)
+            # Decrement by 0.05, but don't go below 0.05
+            new_value = max(0.05, current - 0.05)
+            self.conf_threshold = f"{new_value:.2f}"
+            self.ui.config_cfscore_lineedit.setText(self.conf_threshold)
+            print(f"Confidence threshold decreased to: {self.conf_threshold}")
+            
+            # Reinitialize detector if it exists
+            if self.detector:
+                self.detector = YoloDetector(self.model_name, self.conf_threshold)
+        except ValueError:
+            print("Invalid confidence value")
+    
+    ''' Update confidence threshold from text input '''
+    def update_confidence_from_text(self, text):
+        try:
+            # Validate input is a number between 0 and 1
+            value = float(text)
+            if 0 <= value <= 1:
+                self.conf_threshold = f"{value:.2f}"
+                print(f"Confidence threshold updated to: {self.conf_threshold}")
+                
+                # Reinitialize detector if it exists
+                if self.detector:
+                    self.detector = YoloDetector(self.model_name, self.conf_threshold)
+            else:
+                print(f"Confidence value {value} out of range (0-1)")
+        except ValueError:
+            # If not a valid float, don't update the threshold
+            print(f"Invalid confidence value: {text}")

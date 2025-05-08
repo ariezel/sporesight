@@ -11,7 +11,7 @@ class CameraThread(QThread):
     def __init__(self, url, parent=None):
         super().__init__(parent)
         self.stream_url = url 
-        self.CameraThreadActive = False  
+        self.CameraThreadActive = None  
 
     def run(self):
         self.CameraThreadActive = True
@@ -21,6 +21,7 @@ class CameraThread(QThread):
             if self.stream_url.isdigit():
                 camera_source = int(self.stream_url)
                 
+            print(f"Opening camera stream at {camera_source}")
             capture = cv2.VideoCapture(camera_source)
             
             if not capture.isOpened():

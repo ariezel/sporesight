@@ -91,13 +91,6 @@ QLineEdit:hover {
   border-color: #210F37;
 }
 
-QMessageBox {
-  background-color: #f7f7f7;
-  border: none;
-  border-radius: 14px;
-  color: #4F1C51;
-}
-
 #main_content,
 #title_frame {
   border: none;

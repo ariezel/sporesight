@@ -141,9 +141,7 @@ class Ui_MainWindow(object):
         self.config_body_files.setFrameShape(QFrame.StyledPanel)
         self.config_body_files.setFrameShadow(QFrame.Raised)
         self.verticalLayout_3 = QVBoxLayout(self.config_body_files)
-        self.verticalLayout_3.setSpacing(15)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
-        self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
         self.config_camera_frame = QFrame(self.config_body_files)
         self.config_camera_frame.setObjectName(u"config_camera_frame")
         self.config_camera_frame.setFrameShape(QFrame.StyledPanel)
@@ -190,6 +188,47 @@ class Ui_MainWindow(object):
 
 
         self.verticalLayout_3.addWidget(self.config_camera_frame)
+
+        self.config_classes_frame = QFrame(self.config_body_files)
+        self.config_classes_frame.setObjectName(u"config_classes_frame")
+        self.config_classes_frame.setFrameShape(QFrame.StyledPanel)
+        self.config_classes_frame.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_21 = QHBoxLayout(self.config_classes_frame)
+        self.horizontalLayout_21.setSpacing(0)
+        self.horizontalLayout_21.setObjectName(u"horizontalLayout_21")
+        self.horizontalLayout_21.setContentsMargins(0, 0, 0, 0)
+        self.config_classes_label = QLabel(self.config_classes_frame)
+        self.config_classes_label.setObjectName(u"config_classes_label")
+        sizePolicy.setHeightForWidth(self.config_classes_label.sizePolicy().hasHeightForWidth())
+        self.config_classes_label.setSizePolicy(sizePolicy)
+
+        self.horizontalLayout_21.addWidget(self.config_classes_label, 0, Qt.AlignRight)
+
+        self.config_classesbtn_frame = QFrame(self.config_classes_frame)
+        self.config_classesbtn_frame.setObjectName(u"config_classesbtn_frame")
+        sizePolicy1.setHeightForWidth(self.config_classesbtn_frame.sizePolicy().hasHeightForWidth())
+        self.config_classesbtn_frame.setSizePolicy(sizePolicy1)
+        self.config_classesbtn_frame.setFrameShape(QFrame.StyledPanel)
+        self.config_classesbtn_frame.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_22 = QHBoxLayout(self.config_classesbtn_frame)
+        self.horizontalLayout_22.setSpacing(0)
+        self.horizontalLayout_22.setObjectName(u"horizontalLayout_22")
+        self.horizontalLayout_22.setContentsMargins(0, 0, 0, 0)
+        self.config_classes_lineedit = QLineEdit(self.config_classesbtn_frame)
+        self.config_classes_lineedit.setObjectName(u"config_classes_lineedit")
+
+        self.horizontalLayout_22.addWidget(self.config_classes_lineedit)
+
+        self.config_classes_btn = QPushButton(self.config_classesbtn_frame)
+        self.config_classes_btn.setObjectName(u"config_classes_btn")
+
+        self.horizontalLayout_22.addWidget(self.config_classes_btn)
+
+
+        self.horizontalLayout_21.addWidget(self.config_classesbtn_frame, 0, Qt.AlignVCenter)
+
+
+        self.verticalLayout_3.addWidget(self.config_classes_frame)
 
         self.config_cfscore_frame = QFrame(self.config_body_files)
         self.config_cfscore_frame.setObjectName(u"config_cfscore_frame")
@@ -702,6 +741,8 @@ class Ui_MainWindow(object):
         self.config_desc.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
         self.config_camera_label.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
         self.config_camera_btn.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
+        self.config_classes_label.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
+        self.config_classes_btn.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
         self.config_cfscore_label.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
         self.config_cfscore_btn_sub.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
         self.config_cfscore_btn_add.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
