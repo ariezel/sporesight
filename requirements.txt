@@ -1,6 +1,8 @@
 numpy
+onnxruntime
+onnxruntime_gpu
 opencv_python
+PySide6
 PySide6
 PySide6_Addons
 PySide6_Essentials
-onnxruntime

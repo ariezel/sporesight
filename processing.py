@@ -14,11 +14,9 @@ def load_class_names(classfile_path):
         class_names_file = classfile_path
         with open(class_names_file, 'r') as f:
             class_names = [line.strip() for line in f.readlines()]
-        
         if not class_names:
             print(f"Warning: Class names file is empty. Using default class names.")
             return default_class_names
-            
         return class_names
         
     except FileNotFoundError:
@@ -56,10 +54,19 @@ class YoloDetector:
     ''' Load the ONNX model '''
     def load_onnx_model(self):
         try:
-            # Create ONNX Runtime session with optimizations
+            # Get available providers
+            available_providers = ort.get_available_providers()
+            
+            # Choose providers based on availability
+            providers = []
+            if 'CUDAExecutionProvider' in available_providers:
+                providers.append('CUDAExecutionProvider')
+            providers.append('CPUExecutionProvider')  # Always add CPU as fallback
+            
+            # Create ONNX Runtime session with available providers
             self.onnx_session = ort.InferenceSession(
                 self.model_path, 
-                providers=['CUDAExecutionProvider', 'CPUExecutionProvider']
+                providers=providers
             )
             
             # Get model input shape from model metadata
