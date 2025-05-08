@@ -15,7 +15,7 @@
 #menu_btn {
   border: none;
   height: 40px;
-  margin-left: 20px;
+  margin-left: 30px;
 }
 
 /* Styles for main content */
