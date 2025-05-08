@@ -463,7 +463,7 @@ class DetectionDialog(QDialog):
         self.result = False
         self.accept()
 
-    '''Handle delete button click (new method)'''
+    '''Handle delete button click'''
     def delete_clicked(self):
         # Show confirmation dialog
         response = QMessageBox.question(
