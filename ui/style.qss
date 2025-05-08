@@ -376,6 +376,7 @@ QLineEdit:hover {
 #ipb_adviser_name, #ipb_adviser_designation,
 #ipb_student_name, #ipb_student_designation {
   font-size: 18px;
+  color: #4F1C51;
 }
 
 #ics_adviser_name, 

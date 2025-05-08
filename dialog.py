@@ -285,6 +285,7 @@ class DetectionDialog(QDialog):
                 QTableWidget::item {
                     border-bottom: 1px solid #f0f0f0;
                     padding: 4px;
+                    color: #4F1C51;
                 }
                 QTableWidget::item:selected {
                     background-color: #F1E4F3;
