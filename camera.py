@@ -12,6 +12,7 @@ class CameraThread(QThread):
         super().__init__(parent)
         self.stream_url = url 
         self.CameraThreadActive = None  
+        self.frame = None
 
     def run(self):
         self.CameraThreadActive = True
@@ -32,6 +33,7 @@ class CameraThread(QThread):
                 
             while self.CameraThreadActive:
                 ret, frame = capture.read()
+                self.frame = frame
                 
                 if not ret:
                     print("Error: Could not read frame.")
@@ -84,4 +86,7 @@ class CameraThread(QThread):
         wait_timer = QTimer()
         wait_timer.setSingleShot(True)
         wait_timer.timeout.connect(self.terminate)
-        wait_timer.start(1000)  # Give it 500ms to quit properly
+        wait_timer.start(1000)  # Give it 500ms to quit properly\
+    
+    def get_frame(self):
+        return self.frame

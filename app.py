@@ -359,29 +359,9 @@ class MainWindow(QMainWindow):
                 self.feed_stop_active = True
                 self.ui.feed_stop_btn.setText("Start Feed")
                 self.ui.feed_stop_btn.setStyleSheet(COMPLETED_STYLE)
-            
-            # Capture frame
-            try:
-                # Try to get frame from camera thread first if available
-                if hasattr(self.camera_thread, 'get_current_frame'):
-                    frame = self.camera_thread.get_current_frame()
-                    ret = frame is not None
-                else:
-                    # Fall back to direct camera capture
-                    camera_source = int(self.stream_url) if self.stream_url.isdigit() else self.stream_url
-                    cap = cv2.VideoCapture(camera_source)  
-                    ret, frame = cap.read()
-                    cap.release()
-            except Exception as cam_error:
-                print(f"Camera error: {str(cam_error)}")
-                ret = False
-            
-            if not ret or frame is None:
-                QMessageBox.warning(self, "Camera Error", "Could not capture frame from camera.")
-                return
-            
+           
             # Save the captured frame to a temporary file
-            cv2.imwrite(self.temp_image_path, frame)
+            cv2.imwrite(self.temp_image_path, self.camera_thread.get_frame())
             
             self.ui.feed_progressbar.setValue(30)
             QApplication.processEvents()
