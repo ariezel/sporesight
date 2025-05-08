@@ -24,6 +24,7 @@ class MainWindow(QMainWindow):
         # Initialize class attributes
         self.model_name = model_name
         self.image_path = ""
+        self.classfile_path = "classes.txt"
         self.stream_url = stream_url
         self.detection_history = []
         self.max_history = 20
@@ -31,7 +32,7 @@ class MainWindow(QMainWindow):
         self.detector = None
         self.detection_manager = DetectionManager()
         self.colors = COLORS
-        self.class_names = load_class_names()
+        self.class_names = load_class_names(self.classfile_path)
         self.conf_threshold = "0.25"
         self.temp_image_path = "./temp_capture.jpg"
         self.result_temp_path = "./temp_result.jpg"
@@ -91,6 +92,7 @@ class MainWindow(QMainWindow):
 
         # Configuration page connections
         self.ui.config_camera_btn.clicked.connect(self.open_model_file)
+        self.ui.config_classes_btn.clicked.connect(self.open_class_file)
         self.ui.config_cfscore_btn_add.clicked.connect(self.increment_confidence)
         self.ui.config_cfscore_btn_sub.clicked.connect(self.decrement_confidence)
         self.ui.config_cfscore_lineedit.textChanged.connect(self.update_confidence_from_text)
@@ -194,6 +196,13 @@ class MainWindow(QMainWindow):
         self.ui.config_camera_btn.setCursor(Qt.PointingHandCursor)
         self.ui.config_camera_lineedit.setReadOnly(True)
 
+        # Classes configuration
+        self.ui.config_classes_label.setText('Classes.txt Path')
+        self.ui.config_classes_lineedit.setText(self.classfile_path)
+        self.ui.config_classes_btn.setText('Browse')
+        self.ui.config_classes_btn.setCursor(Qt.PointingHandCursor)
+        self.ui.config_classes_lineedit.setReadOnly(True)
+
         # Confidence Score configuration section
         self.ui.config_cfscore_label.setText('Confidence Score')
         self.ui.config_cfscore_lineedit.setText(self.conf_threshold)
@@ -207,14 +216,23 @@ class MainWindow(QMainWindow):
         # Add config page to stacked widget
         self.ui.pages.addWidget(self.ui.config_section_frame)   # Initialize the UI class
     
+    '''Open file dialog to select ONNX model file'''
     def open_model_file(self):
-        '''Open file dialog to select ONNX model file'''
         options = QFileDialog.Options()
         file_name, _ = QFileDialog.getOpenFileName(self, "Select ONNX Model File", "", "ONNX Files (*.onnx);;All Files (*)", options=options)
         
         if file_name:
             self.ui.config_camera_lineedit.setText(file_name)
             self.model_name = file_name
+
+    '''Open file dialog to select class file'''
+    def open_class_file(self):
+        options = QFileDialog.Options()
+        file_name, _ = QFileDialog.getOpenFileName(self, "Select text file containing classes", "", "TXT Files (*.txt);;All Files (*)", options=options)
+        
+        if file_name:
+            self.ui.config_classes_lineedit.setText(file_name)
+            self.classfile_path = file_name
 
     '''Open file dialog to select image file'''
     def open_image_file(self):
@@ -225,7 +243,7 @@ class MainWindow(QMainWindow):
             try:
                 QApplication.setOverrideCursor(Qt.WaitCursor)
                 self.image_path = file_name
-                self.detector = YoloDetector(self.model_name, self.conf_threshold)
+                self.detector = YoloDetector(self.model_name, self.conf_threshold, self.class_names)
                 result_image, detections = self.detector.process_image(self.image_path)
                 # Save the result image to temporary file first
                 cv2.imwrite(self.result_temp_path, result_image)
@@ -244,6 +262,7 @@ class MainWindow(QMainWindow):
                 # Make sure cursor is restored even if there was an error
                 if QApplication.overrideCursor():
                     QApplication.restoreOverrideCursor()
+            QApplication.restoreOverrideCursor()
 
     ''' Edit Feed UI '''
     def init_camera_page(self, option):
@@ -280,33 +299,23 @@ class MainWindow(QMainWindow):
 
     ''' Initialize the camera thread for video streaming '''
     def init_camera_thread(self):
-        # Create camera thread if needed
         if not self.camera_thread:
-            print(self.stream_url)
             self.camera_thread = CameraThread(self.stream_url)
-            print(self.camera_thread)
             self.camera_thread.imageUpdate.connect(self.update_camera_image)
 
     ''' Toggle camera feed on/off '''
     @Slot()
     def toggle_camera_feed(self):
         self.feed_stop_active = not self.feed_stop_active
-        print(f"Camera feed toggle, active={not self.feed_stop_active}")
-        
         if self.feed_stop_active:
-            # Stop the feed
-            print("Stopping camera thread...")
             if self.camera_thread and self.camera_thread.isRunning():
                 self.camera_thread.stop()
             self.ui.feed_stop_btn.setText("Start Feed")
             self.ui.feed_stop_btn.setStyleSheet(COMPLETED_STYLE)
         else:
-            # Start the feed
-            print("Starting camera thread...")
             if not self.camera_thread:
                 self.init_camera_thread()
             self.camera_thread.start()
-            print(f"Thread running: {self.camera_thread.isRunning()}")
             self.ui.feed_stop_btn.setText("Stop Feed")
             self.ui.feed_stop_btn.setStyleSheet(DEFAULT_STYLE)
     
@@ -325,7 +334,7 @@ class MainWindow(QMainWindow):
         try:
             # Check if detector is initialized
             if not self.detector:
-                self.detector = YoloDetector(self.model_name, self.conf_threshold)
+                self.detector = YoloDetector(self.model_name, self.conf_threshold, self.class_names)
                 # Get class names from detector if available
                 if hasattr(self.detector, 'get_class_names'):
                     self.class_names = self.detector.get_class_names()
@@ -404,12 +413,8 @@ class MainWindow(QMainWindow):
                 print("Warning: Could not save result image")
 
             self.ui.feed_progressbar.setValue(100)
-                
-            # Show confirmation dialog with the detected image
-            print("Showing detection confirmation dialog...")
             QApplication.setOverrideCursor(Qt.ArrowCursor)  
             save_confirmed = self.show_detection_confirmation_dialog(self.result_temp_path, detections)
-            print(f"Dialog result: {save_confirmed}")
             
             if save_confirmed:
                 image_path = self.save_detection_results(result_image, detections)
@@ -419,23 +424,17 @@ class MainWindow(QMainWindow):
             
             QApplication.setOverrideCursor(Qt.ArrowCursor)  
             
-            
         except Exception as e:
             print(f"Detection error: {str(e)}")
             import traceback
             traceback.print_exc()
             QMessageBox.critical(self, "Detection Error", f"An error occurred: {str(e)}")
+        
         finally:
-                
-            # Reset UI
             self.ui.feed_detect_btn.setEnabled(True)
             self.ui.feed_detect_btn.setText("Detect")
             QApplication.restoreOverrideCursor() 
-            
-            # Hide progress bar after a delay
             QTimer.singleShot(1500, lambda: self.ui.feed_progressbar.setVisible(False))
-            
-            # Clean up temporary files
             try:
                 for temp_file in [self.temp_image_path, self.result_temp_path]:
                     if os.path.exists(temp_file):
@@ -625,8 +624,6 @@ class MainWindow(QMainWindow):
                 if folder_path and os.path.exists(folder_path) and not os.listdir(folder_path):
                     try:
                         os.rmdir(folder_path)
-                        print(f"Removed empty folder: {folder_path}")
-                        # Update date filters after removing the folder
                         QTimer.singleShot(100, lambda: self.update_analytics_page())
                         return  # Early return as we're going to refresh the page
                     except Exception as e:
@@ -681,7 +678,7 @@ class MainWindow(QMainWindow):
                     
                     # Create card
                     try:
-                        card = DetectionCard(image_path, detection_details, parent=cards_container)
+                        card = DetectionCard(image_path, detection_details, self.class_names, parent=cards_container)
                         
                         # Add to layout
                         cards_layout.addWidget(card, row, col, Qt.AlignLeft | Qt.AlignTop)
@@ -704,7 +701,6 @@ class MainWindow(QMainWindow):
             error_label.setAlignment(Qt.AlignCenter)
             error_label.setStyleSheet("font-size: 16px; color: #f00; padding: 40px;")
             cards_layout.addWidget(error_label, 0, 0, 1, 3)
-            print(f"Error loading detections: {str(e)}")
             import traceback
             traceback.print_exc()
         
@@ -729,8 +725,6 @@ class MainWindow(QMainWindow):
                         parent_layout.removeItem(item)
                         break
             card.setParent(None)
-
-            print(f"Card removed for deleted image: {os.path.basename(card.image_path)}")
         else:
             print("Warning: Could not find parent container for card")
         
@@ -831,8 +825,6 @@ class MainWindow(QMainWindow):
             if detections is None:
                 detections = []
             
-            # Show the dialog and return the result
-            print(f"Showing dialog with image: {image_path}, detections: {detections}")
             result = DetectionDialog.show_detection_confirmation(
                 parent=self,
                 image_path=image_path,
@@ -841,7 +833,6 @@ class MainWindow(QMainWindow):
                 class_names=class_names,
                 colors=colors
             )
-            print(f"Dialog returned: {result}")
             return result
 
         except Exception as e:
@@ -867,11 +858,10 @@ class MainWindow(QMainWindow):
                 print("Camera thread did not finish in time, forcing termination")
                 self.camera_thread.terminate()
                 self.camera_thread.wait()  # Wait for it to finish terminating
-    
         print("Cleanup done, accepting close event")
         event.accept()
 
-        ''' Increment confidence threshold '''
+    ''' Increment confidence threshold '''
     def increment_confidence(self):
         try:
             current = float(self.conf_threshold)
@@ -879,11 +869,6 @@ class MainWindow(QMainWindow):
             new_value = min(1.0, current + 0.05)
             self.conf_threshold = f"{new_value:.2f}"
             self.ui.config_cfscore_lineedit.setText(self.conf_threshold)
-            print(f"Confidence threshold increased to: {self.conf_threshold}")
-            
-            # Reinitialize detector if it exists
-            if self.detector:
-                self.detector = YoloDetector(self.model_name, self.conf_threshold)
         except ValueError:
             print("Invalid confidence value")
     
@@ -895,11 +880,6 @@ class MainWindow(QMainWindow):
             new_value = max(0.05, current - 0.05)
             self.conf_threshold = f"{new_value:.2f}"
             self.ui.config_cfscore_lineedit.setText(self.conf_threshold)
-            print(f"Confidence threshold decreased to: {self.conf_threshold}")
-            
-            # Reinitialize detector if it exists
-            if self.detector:
-                self.detector = YoloDetector(self.model_name, self.conf_threshold)
         except ValueError:
             print("Invalid confidence value")
     
@@ -911,10 +891,6 @@ class MainWindow(QMainWindow):
             if 0 <= value <= 1:
                 self.conf_threshold = f"{value:.2f}"
                 print(f"Confidence threshold updated to: {self.conf_threshold}")
-                
-                # Reinitialize detector if it exists
-                if self.detector:
-                    self.detector = YoloDetector(self.model_name, self.conf_threshold)
             else:
                 print(f"Confidence value {value} out of range (0-1)")
         except ValueError:

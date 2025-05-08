@@ -8,10 +8,10 @@ from pathlib import Path
 from resources import COLORS
 
 ''' Load class names from file '''
-def load_class_names():
+def load_class_names(classfile_path):
     default_class_names = ["unknown"]
     try:
-        class_names_file = "classes.txt"
+        class_names_file = classfile_path
         with open(class_names_file, 'r') as f:
             class_names = [line.strip() for line in f.readlines()]
         
@@ -30,31 +30,32 @@ def load_class_names():
 
 ''' Class to handle YOLO object detection using ONNX Runtime '''
 class YoloDetector:
-    def __init__(self, model_path, conf_threshold):
+    def __init__(self, model_path, conf_threshold, class_names):
         '''
         Initialize detector with ONNX model path
         
         Parameters:
         - model_path: Path to the ONNX model file. If None, will look in default locations.
         '''
-        self.class_names = load_class_names()
+        self.class_names = class_names
         self.colors = COLORS
         self.onnx_session = None
         self.expected_image_shape = None
-        self.conf_threshold = 0.25
+        self.conf_threshold = float(conf_threshold)
 
         # Save model path and initialize ONNX Runtime session
         self.model_path = model_path
-
         if not model_path or not os.path.exists(model_path):
             raise FileNotFoundError(f"ONNX model not found. Please provide a valid model path.")
         
+        print(f'Confidence Score Threshold:     {self.conf_threshold}')
+        print(f'Loading ONNX model from:     {self.model_path}')
+
         self.load_onnx_model()
     
     ''' Load the ONNX model '''
     def load_onnx_model(self):
         try:
-            print(f"Loading ONNX model from {self.model_path}")
             # Create ONNX Runtime session with optimizations
             self.onnx_session = ort.InferenceSession(
                 self.model_path, 

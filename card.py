@@ -9,7 +9,7 @@ from dialog import DetectionDialog
 
 class DetectionCard(QFrame):
     ''' Card widget to display full image with detection results '''
-    def __init__(self, image_path, detections, parent=None):
+    def __init__(self, image_path, detections, class_names, parent=None):
         '''
         Parameters:
         - image_path: Path to the full image with detections
@@ -21,7 +21,7 @@ class DetectionCard(QFrame):
         self.image_path = image_path
         self.detections = detections
         self.timestamp = ''
-        self.class_names = load_class_names()
+        self.class_names = class_names
         self.colors = COLORS
         
         # Set frame style

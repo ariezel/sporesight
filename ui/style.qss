@@ -241,35 +241,38 @@ QLineEdit:hover {
 #config_camerabtn_frame,
 #config_cfscore_frame,
 #config_cfscorebtn_frame,
-#config_camera_frame {
+#config_classes_frame,
+#config_classesbtn_frame {
   border: none;
   margin-right: 20px;
 }
 
 #config_cfscore_label,
-#config_camera_label {
+#config_camera_label,
+#config_classes_label {
   color: black;
   font-size: 16px;
   font-weight: 600;
   margin-right: 20px;
 }
 
-
 #config_camera_lineedit,
-#config_cfscore_lineedit {
+#config_cfscore_lineedit,
+#config_classes_lineedit {
   color: black;
   background-color: white;
   font-size: 14px;
 }
 
-#config_camera_lineedit {
+#config_camera_lineedit,
+#config_classes_lineedit {
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
 }
 
-
 #config_cfscore_btn_add,
-#config_camera_btn {
+#config_camera_btn,
+#config_classes_btn {
   text-align: center;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
@@ -300,7 +303,8 @@ QLineEdit:hover {
 
 #config_cfscore_btn_add:hover,
 #config_cfscore_btn_sub:hover,
-#config_camera_btn:hover {
+#config_camera_btn:hover,
+#config_classes_btn:hover {
   border-color: #4F1C51;
   background-color: #4F1C51;
 }
