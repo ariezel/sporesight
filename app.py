@@ -22,7 +22,6 @@ class MainWindow(QMainWindow):
         self.title = "SporeSight"
         self.model_name = model_name
         self.image_path = ""
-        self.classfile_path = "classes.txt"
         self.stream_url = stream_url
         self.detection_history = []
         self.max_history = 20
@@ -30,7 +29,6 @@ class MainWindow(QMainWindow):
         self.detector = None
         self.detection_manager = DetectionManager()
         self.colors = COLORS
-        self.class_names = load_class_names(self.classfile_path)
         self.conf_threshold = "0.25"
         self.temp_image_path = "./temp_capture.jpg"
         self.result_temp_path = "./temp_result.jpg"
@@ -231,7 +229,7 @@ class MainWindow(QMainWindow):
         
         if file_name:
             self.ui.config_classes_lineedit.setText(file_name)
-            self.classfile_path = file_name
+            self.class_names = load_class_names(file_name)
 
     '''Open file dialog to select image file'''
     def open_image_file(self):
@@ -242,6 +240,7 @@ class MainWindow(QMainWindow):
             try:
                 QApplication.setOverrideCursor(Qt.WaitCursor)
                 self.image_path = file_name
+                print(self.class_names)
                 self.detector = YoloDetector(self.model_name, self.conf_threshold, self.class_names)
                 result_image, detections = self.detector.process_image(self.image_path)
                 # Save the result image to temporary file first
