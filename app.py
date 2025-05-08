@@ -15,13 +15,12 @@ from processing import YoloDetector
 output_path = "./test/output/0003.jpg"
 
 class MainWindow(QMainWindow):
-    
-    title = "SporeSight"
 
     def __init__(self, model_name, stream_url="0"):
         super().__init__() 
 
         # Initialize class attributes
+        self.title = "SporeSight"
         self.model_name = model_name
         self.image_path = ""
         self.classfile_path = "classes.txt"
@@ -37,14 +36,14 @@ class MainWindow(QMainWindow):
         self.temp_image_path = "./temp_capture.jpg"
         self.result_temp_path = "./temp_result.jpg"
 
+        ''' Initialize UI and its elements '''
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
+        
         # Set window properties
         self.setWindowTitle(self.title)
         self.setWindowIcon(QPixmap(LOGO_ICON_SELECTED))
         self.setMinimumSize(1420, 780) 
-
-        ''' Initialize UI and its elements '''
-        self.ui = Ui_MainWindow()
-        self.ui.setupUi(self)
         
         self.setup_ui_elements()
         self.init_menu(MENU)
