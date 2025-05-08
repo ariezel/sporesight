@@ -354,11 +354,11 @@ class DetectionDialog(QDialog):
                         background-color: #f0f0f0;
                         height: 16px;
                         text-align: center;
+                        color: black;
                     }}
                     QProgressBar::chunk {{
                         background-color: {qt_color};
                         border-radius: 2px;
-                        color: black;
                     }}
                 ''')
                 
