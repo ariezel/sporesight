@@ -1,14 +1,13 @@
-import time
 from PySide6.QtWidgets import *
-from PySide6.QtCore import Qt
 from PySide6.QtGui import *
+from PySide6.QtCore import *
 from camera import CameraThread  # Import CameraThread
 from card import *
 from detection import DetectionManager
 from resources import *
 from ui.app_ui import Ui_MainWindow
-from PySide6.QtCore import *
 import cv2
+import time
 
 from processing import YoloDetector
 
@@ -39,10 +38,10 @@ class MainWindow(QMainWindow):
         ''' Initialize UI and its elements '''
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        
+
         # Set window properties
         self.setWindowTitle(self.title)
-        self.setWindowIcon(QPixmap(LOGO_ICON_SELECTED))
+        self.setWindowIcon(QPixmap(SS_LOGO))
         self.setMinimumSize(1420, 780) 
         
         self.setup_ui_elements()
@@ -876,3 +875,5 @@ class MainWindow(QMainWindow):
         except ValueError:
             # If not a valid float, don't update the threshold
             print(f"Invalid confidence value: {text}")
+
+

@@ -24,6 +24,8 @@ PERSON_ICON_SELECTED = ICONS_DIR / "person_selected.png"
 LOGO_DIR = UI_DIR / "logo"
 ICS_LOGO = LOGO_DIR / "ICS.png"
 IPB_LOGO = LOGO_DIR / "IPB.png"
+SS_LOGO = LOGO_DIR / "sporesight.ico"
+SS_LOGO_PNG = LOGO_DIR / "sporesight.png"
 
 # Font paths
 FONTS_DIR = UI_DIR / "font"

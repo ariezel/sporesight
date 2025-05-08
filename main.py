@@ -1,7 +1,7 @@
 import argparse, sys
 from pathlib import Path
 from PySide6.QtWidgets import QApplication
-from app import MainWindow
+from splash import Splash
 from resources import STYLE_QSS 
 
 if __name__ == "__main__":
@@ -16,8 +16,7 @@ if __name__ == "__main__":
     if style_path.exists():
         with style_path.open("r") as style_file:
             app.setStyleSheet(style_file.read())
-
-    root = MainWindow(args.model_name)
-    root.showMaximized()
-
+    
+    splash = Splash(args.model_name)
+    
     sys.exit(app.exec())
