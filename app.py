@@ -169,6 +169,27 @@ class MainWindow(QMainWindow):
         self.ui.config_camera_btn.setText('Browse')
         self.ui.config_camera_btn.setCursor(Qt.PointingHandCursor)
         
+        # Set frame style
+        self.ui.config_body_desc.setFrameShape(QFrame.StyledPanel)
+        self.ui.config_body_desc.setFrameShadow(QFrame.Raised)
+
+        shadow = QGraphicsDropShadowEffect(self)
+        shadow.setBlurRadius(20)
+        shadow.setXOffset(0)
+        shadow.setYOffset(2)
+        shadow.setColor(QColor(0, 0, 0, 30))  # semi-transparent black
+        self.ui.config_body_desc.setGraphicsEffect(shadow)
+
+        self.ui.config_body_files.setFrameShape(QFrame.StyledPanel)
+        self.ui.config_body_files.setFrameShadow(QFrame.Raised)
+
+        shadow = QGraphicsDropShadowEffect(self)
+        shadow.setBlurRadius(20)
+        shadow.setXOffset(0)
+        shadow.setYOffset(2)
+        shadow.setColor(QColor(0, 0, 0, 30))  # semi-transparent black
+        self.ui.config_body_files.setGraphicsEffect(shadow)
+
         # Add config page to stacked widget
         self.ui.pages.addWidget(self.ui.config_section_frame)   # Initialize the UI class
     

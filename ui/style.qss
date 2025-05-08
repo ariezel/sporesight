@@ -193,6 +193,16 @@ QLineEdit:hover {
   background-color: #f7f7f7;
 }
 
+#config_body_desc,
+#config_body_files {
+  background-color: white;
+  border-radius: 14px;
+  padding-top: 15px;
+  padding-right: 10px;
+  padding-left: 10px;
+  padding-bottom: 5px;
+}
+
 #config_desc,
 #feed_desc,
 #analytics_desc,
