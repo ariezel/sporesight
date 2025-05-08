@@ -261,6 +261,8 @@ class DetectionDialog(QDialog):
             table.setAlternatingRowColors(True)
             table.setShowGrid(False)
             table.setFocusPolicy(Qt.NoFocus)
+            # Make table read-only
+            table.setEditTriggers(QAbstractItemView.NoEditTriggers)
             
             # Configure header
             header = table.horizontalHeader()
@@ -312,11 +314,13 @@ class DetectionDialog(QDialog):
                 # Add class name
                 class_item = QTableWidgetItem(class_name)
                 class_item.setTextAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+                class_item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)  # Read-only
                 table.setItem(i, 0, class_item)
                 
                 # Add count/frequency
                 count_item = QTableWidgetItem(str(data['count']))
                 count_item.setTextAlignment(Qt.AlignCenter)
+                count_item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)  # Read-only
                 table.setItem(i, 1, count_item)
                 
                 # Add confidence range widget
