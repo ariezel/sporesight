@@ -30,7 +30,7 @@ def load_class_names():
 
 ''' Class to handle YOLO object detection using ONNX Runtime '''
 class YoloDetector:
-    def __init__(self, model_path):
+    def __init__(self, model_path, conf_threshold):
         '''
         Initialize detector with ONNX model path
         
@@ -41,6 +41,7 @@ class YoloDetector:
         self.colors = COLORS
         self.onnx_session = None
         self.expected_image_shape = None
+        self.conf_threshold = 0.25
 
         # Save model path and initialize ONNX Runtime session
         self.model_path = model_path
@@ -193,7 +194,7 @@ class YoloDetector:
             raise
     
     ''' Process output retrieved from model '''
-    def process_yolo_output(self, detections, scale, conf_threshold=0.25, iou_threshold=0.45):
+    def process_yolo_output(self, detections, scale, iou_threshold=0.45):
         '''
         Process YOLO output tensor into bounding boxes, scores, and class IDs
         
@@ -215,7 +216,7 @@ class YoloDetector:
         num_classes = detections.shape[1] - 5  # Subtract 5 for x,y,w,h,conf
         confidence_scores = detections[:, 4]
         
-        mask = confidence_scores >= conf_threshold
+        mask = confidence_scores >= self.conf_threshold
         if not np.any(mask):
             return [], [], []
         
@@ -253,7 +254,7 @@ class YoloDetector:
             # Final score is confidence * class probability
             score = float(conf * class_score)
             
-            if score >= conf_threshold:
+            if score >= self.conf_threshold:
                 boxes.append([x1, y1, x2, y2])
                 scores.append(score)
                 class_ids.append(class_id)
@@ -267,7 +268,7 @@ class YoloDetector:
         class_ids = np.array(class_ids)
         
         # Apply non-maximum suppression
-        indices = cv2.dnn.NMSBoxes(boxes.tolist(), scores.tolist(), conf_threshold, iou_threshold)
+        indices = cv2.dnn.NMSBoxes(boxes.tolist(), scores.tolist(), self.conf_threshold, iou_threshold)
         
         if len(indices) > 0:
             # OpenCV returns indices in different formats depending on version

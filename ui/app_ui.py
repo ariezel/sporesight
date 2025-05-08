@@ -114,7 +114,7 @@ class Ui_MainWindow(object):
         self.config_body_frame.setFrameShape(QFrame.StyledPanel)
         self.config_body_frame.setFrameShadow(QFrame.Raised)
         self.verticalLayout_2 = QVBoxLayout(self.config_body_frame)
-        self.verticalLayout_2.setSpacing(10)
+        self.verticalLayout_2.setSpacing(15)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.verticalLayout_2.setContentsMargins(0, 10, 0, 0)
         self.config_body_desc = QFrame(self.config_body_frame)
@@ -212,19 +212,24 @@ class Ui_MainWindow(object):
         self.config_cfscorebtn_frame.setSizePolicy(sizePolicy1)
         self.config_cfscorebtn_frame.setFrameShape(QFrame.StyledPanel)
         self.config_cfscorebtn_frame.setFrameShadow(QFrame.Raised)
-        self.horizontalLayout_19 = QHBoxLayout(self.config_cfscorebtn_frame)
-        self.horizontalLayout_19.setSpacing(0)
-        self.horizontalLayout_19.setObjectName(u"horizontalLayout_19")
-        self.horizontalLayout_19.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout_9 = QHBoxLayout(self.config_cfscorebtn_frame)
+        self.horizontalLayout_9.setSpacing(0)
+        self.horizontalLayout_9.setObjectName(u"horizontalLayout_9")
+        self.horizontalLayout_9.setContentsMargins(0, 0, 0, 0)
+        self.config_cfscore_btn_sub = QPushButton(self.config_cfscorebtn_frame)
+        self.config_cfscore_btn_sub.setObjectName(u"config_cfscore_btn_sub")
+
+        self.horizontalLayout_9.addWidget(self.config_cfscore_btn_sub)
+
         self.config_cfscore_lineedit = QLineEdit(self.config_cfscorebtn_frame)
         self.config_cfscore_lineedit.setObjectName(u"config_cfscore_lineedit")
 
-        self.horizontalLayout_19.addWidget(self.config_cfscore_lineedit)
+        self.horizontalLayout_9.addWidget(self.config_cfscore_lineedit)
 
-        self.config_cfscore_btn = QPushButton(self.config_cfscorebtn_frame)
-        self.config_cfscore_btn.setObjectName(u"config_cfscore_btn")
+        self.config_cfscore_btn_add = QPushButton(self.config_cfscorebtn_frame)
+        self.config_cfscore_btn_add.setObjectName(u"config_cfscore_btn_add")
 
-        self.horizontalLayout_19.addWidget(self.config_cfscore_btn)
+        self.horizontalLayout_9.addWidget(self.config_cfscore_btn_add)
 
 
         self.horizontalLayout_18.addWidget(self.config_cfscorebtn_frame, 0, Qt.AlignVCenter)
@@ -502,7 +507,7 @@ class Ui_MainWindow(object):
         self.about_body_frame.setFrameShape(QFrame.StyledPanel)
         self.about_body_frame.setFrameShadow(QFrame.Raised)
         self.verticalLayout_12 = QVBoxLayout(self.about_body_frame)
-        self.verticalLayout_12.setSpacing(10)
+        self.verticalLayout_12.setSpacing(15)
         self.verticalLayout_12.setObjectName(u"verticalLayout_12")
         self.verticalLayout_12.setContentsMargins(0, 10, 0, 0)
         self.about_ics_frame = QFrame(self.about_body_frame)
@@ -607,6 +612,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_14.setContentsMargins(0, 0, 0, 0)
         self.ipb_logo_label = QLabel(self.ipb_logo)
         self.ipb_logo_label.setObjectName(u"ipb_logo_label")
+        self.ipb_logo_label.setLayoutDirection(Qt.RightToLeft)
 
         self.horizontalLayout_14.addWidget(self.ipb_logo_label)
 
@@ -697,7 +703,8 @@ class Ui_MainWindow(object):
         self.config_camera_label.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
         self.config_camera_btn.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
         self.config_cfscore_label.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
-        self.config_cfscore_btn.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
+        self.config_cfscore_btn_sub.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
+        self.config_cfscore_btn_add.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
         self.feed_title.setText("")
         self.feed_label.setText("")
         self.feed_desc.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))

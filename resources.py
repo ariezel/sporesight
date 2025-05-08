@@ -20,6 +20,11 @@ ANALYTICS_ICON_SELECTED = ICONS_DIR / "analytics_selected.png"
 PERSON_ICON = ICONS_DIR / "person.png"
 PERSON_ICON_SELECTED = ICONS_DIR / "person_selected.png"
 
+# LOGO
+LOGO_DIR = UI_DIR / "logo"
+ICS_LOGO = LOGO_DIR / "ICS.png"
+IPB_LOGO = LOGO_DIR / "IPB.png"
+
 # Font paths
 FONTS_DIR = UI_DIR / "font"
 INTER_FONT = FONTS_DIR / "Inter.ttf"
@@ -129,6 +134,12 @@ QProgressBar::chunk {
 # Pages
 MENU = [
     { 
+        "name": "     Configuration", 
+        "default_icon": SETTING_ICON,
+        "selected_icon": SETTING_ICON_SELECTED,
+        "description": """Input your preferred <b>ONNX model</b> and <b>confidence score</b>""", 
+    },
+    { 
         "name": "     Camera View", 
         "default_icon": LOGO_ICON,
         "selected_icon": LOGO_ICON_SELECTED,
@@ -146,14 +157,6 @@ MENU = [
         "selected_icon": PERSON_ICON_SELECTED,
         "description": "", 
     },
-    { 
-        "name": "     Configuration", 
-        "default_icon": SETTING_ICON,
-        "selected_icon": SETTING_ICON_SELECTED,
-        "description": """
-            Input your preferred <b>ONNX model</b> and <b>confidence score</b>
-          """, 
-    }
 ]
 
 # About

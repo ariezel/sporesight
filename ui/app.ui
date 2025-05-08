@@ -211,7 +211,7 @@ border-radius: 15px;</string>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
             <property name="spacing">
-             <number>10</number>
+             <number>15</number>
             </property>
             <property name="leftMargin">
              <number>0</number>
@@ -435,7 +435,7 @@ border-radius: 15px;</string>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
                     </property>
-                    <layout class="QHBoxLayout" name="horizontalLayout_19">
+                    <layout class="QHBoxLayout" name="horizontalLayout_9">
                      <property name="spacing">
                       <number>0</number>
                      </property>
@@ -452,10 +452,17 @@ border-radius: 15px;</string>
                       <number>0</number>
                      </property>
                      <item>
+                      <widget class="QPushButton" name="config_cfscore_btn_sub">
+                       <property name="text">
+                        <string>PushButton</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
                       <widget class="QLineEdit" name="config_cfscore_lineedit"/>
                      </item>
                      <item>
-                      <widget class="QPushButton" name="config_cfscore_btn">
+                      <widget class="QPushButton" name="config_cfscore_btn_add">
                        <property name="text">
                         <string>PushButton</string>
                        </property>
@@ -1116,7 +1123,7 @@ border-radius: 15px;</string>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_12">
             <property name="spacing">
-             <number>10</number>
+             <number>15</number>
             </property>
             <property name="leftMargin">
              <number>0</number>
@@ -1362,6 +1369,9 @@ border-radius: 15px;</string>
                   </property>
                   <item>
                    <widget class="QLabel" name="ipb_logo_label">
+                    <property name="layoutDirection">
+                     <enum>Qt::RightToLeft</enum>
+                    </property>
                     <property name="text">
                      <string>ipb logo</string>
                     </property>

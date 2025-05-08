@@ -18,12 +18,12 @@ class MainWindow(QMainWindow):
     
     title = "SporeSight"
 
-    def __init__(self, model_name, image_path="./test/images/0020.jpg", stream_url="0"):
+    def __init__(self, model_name, stream_url="0"):
         super().__init__() 
 
         # Initialize class attributes
         self.model_name = model_name
-        self.image_path = image_path
+        self.image_path = ""
         self.stream_url = stream_url
         self.detection_history = []
         self.max_history = 20
@@ -33,6 +33,7 @@ class MainWindow(QMainWindow):
         self.detection_manager = DetectionManager()
         self.colors = COLORS
         self.class_names = load_class_names()
+        self.conf_threshold = "0.25"
 
         # Set window properties
         self.setWindowTitle(self.title)
@@ -187,12 +188,17 @@ class MainWindow(QMainWindow):
         self.ui.config_camera_lineedit.setText(self.model_name)
         self.ui.config_camera_btn.setText('Browse')
         self.ui.config_camera_btn.setCursor(Qt.PointingHandCursor)
+        self.ui.config_camera_lineedit.setReadOnly(True)
 
         # Confidence Score configuration section
         self.ui.config_cfscore_label.setText('Confidence Score')
-        self.ui.config_cfscore_lineedit.setText("")
-        self.ui.config_cfscore_btn.setText('Browse')
-        self.ui.config_cfscore_btn.setCursor(Qt.PointingHandCursor)
+        self.ui.config_cfscore_lineedit.setText(self.conf_threshold)
+        self.ui.config_cfscore_btn_add.setText('+')
+        self.ui.config_cfscore_btn_add.setCursor(Qt.PointingHandCursor)
+        self.ui.config_cfscore_btn_sub.setText('-')
+        self.ui.config_cfscore_btn_sub.setCursor(Qt.PointingHandCursor)
+
+        self.ui.config_cfscore_lineedit.setAlignment(Qt.AlignCenter) 
 
         # Add config page to stacked widget
         self.ui.pages.addWidget(self.ui.config_section_frame)   # Initialize the UI class
@@ -205,6 +211,16 @@ class MainWindow(QMainWindow):
         if file_name:
             self.ui.config_camera_lineedit.setText(file_name)
             self.model_name = file_name
+
+    '''Open file dialog to select image file'''
+    def open_image_file(self):
+        options = QFileDialog.Options()
+        file_name, _ = QFileDialog.getOpenFileName(self, "Select Image File", "", "Image Files (*.jpg *.jpeg *.png);;All Files (*)", options=options)
+        
+        if file_name:
+            self.image_path = file_name
+
+        self.on_detect_clicked(False)
 
     ''' Edit Feed UI '''
     def init_camera_page(self, option):
@@ -257,23 +273,36 @@ class MainWindow(QMainWindow):
         self.ui.feed_label.setPixmap(QPixmap.fromImage(scaled_img))
     
     ''' Process detection on the current frame '''
-    def on_detect_clicked(self):
+    def on_detect_clicked(self, is_live_img=True):
+        """
+        Process detection on either a live camera frame or a selected image file
+        
+        Args:
+            is_live_img (bool): If True, detect from live camera feed. If False, use selected image file.
+        """
         temp_image_path = "./temp_capture.jpg"
         result_temp_path = "./temp_result.jpg"
-        test_image_path = "./test/images/0050.jpg"
-        
+        test_image_path = "./test/images/0050.jpg"  # Fallback test image
+
         try:
             # Check if detector is initialized
             if not self.detector:
-                self.detector = YoloDetector(self.model_name)
+                self.detector = YoloDetector(self.model_name, self.conf_threshold)
                 # Get class names from detector if available
                 if hasattr(self.detector, 'get_class_names'):
                     self.class_names = self.detector.get_class_names()
             
-            # Check if camera thread is running
-            if not self.camera_thread or not self.camera_thread.isRunning():
-                QMessageBox.warning(self, "Camera Error", "Please start the camera feed first before detecting.")
-                return
+            # Check if we have a valid source image
+            if is_live_img:
+                # We need a running camera for live detection
+                if not self.camera_thread or not self.camera_thread.isRunning():
+                    QMessageBox.warning(self, "Camera Error", "Please start the camera feed first before detecting.")
+                    return
+            else:
+                # For file-based detection, we need a selected image path
+                if not self.image_path:
+                    QMessageBox.warning(self, "Image Error", "Please select an image file to detect.")
+                    return
             
             # Show loading indicator - start
             self.ui.feed_detect_btn.setEnabled(False) 
@@ -283,37 +312,52 @@ class MainWindow(QMainWindow):
             self.ui.feed_progressbar.setVisible(True)
             QApplication.processEvents() 
             
-            self.camera_thread.CameraThreadActive = False
+            # If detecting from live feed, pause the camera
+            if is_live_img and self.camera_thread and self.camera_thread.isRunning():
+                self.camera_thread.CameraThreadActive = False
+                
+                # Update UI to reflect paused state
+                if not self.feed_stop_active:
+                    self.feed_stop_active = True
+                    self.ui.feed_stop_btn.setText("Start Feed")
+                    self.ui.feed_stop_btn.setStyleSheet(COMPLETED_STYLE)
             
-            # Update UI to reflect paused state
-            if not self.feed_stop_active:
-                self.feed_stop_active = True
-                self.ui.feed_stop_btn.setText("Start Feed")
-                self.ui.feed_stop_btn.setStyleSheet(COMPLETED_STYLE)
+            # Initialize the image path to process
+            active_image_path = None
             
-            # Capture frame
-            try:
-                # Try to get frame from camera thread first if available
-                if hasattr(self.camera_thread, 'get_current_frame'):
-                    frame = self.camera_thread.get_current_frame()
-                    ret = frame is not None
-                else:
-                    # Fall back to direct camera capture
-                    camera_source = int(self.stream_url) if self.stream_url.isdigit() else self.stream_url
-                    cap = cv2.VideoCapture(camera_source)  
-                    ret, frame = cap.read()
-                    cap.release()
-            except Exception as cam_error:
-                print(f"Camera error: {str(cam_error)}")
-                ret = False
+            # CASE 1: Live camera image detection
+            if is_live_img:
+                # Capture frame from camera
+                try:
+                    # Try to get frame from camera thread first if available
+                    if hasattr(self.camera_thread, 'get_current_frame'):
+                        frame = self.camera_thread.get_current_frame()
+                        ret = frame is not None
+                    else:
+                        # Fall back to direct camera capture
+                        camera_source = int(self.stream_url) if self.stream_url.isdigit() else self.stream_url
+                        cap = cv2.VideoCapture(camera_source)  
+                        ret, frame = cap.read()
+                        cap.release()
+                    
+                    # Save the captured frame to a temporary file if successful
+                    if ret and frame is not None:
+                        cv2.imwrite(temp_image_path, frame)
+                        active_image_path = temp_image_path
+                        print(f"Using captured camera frame: {os.path.abspath(temp_image_path)}")
+                    else:
+                        # If camera capture failed, use test image as fallback
+                        active_image_path = test_image_path
+                        print(f"Camera capture failed, using test image: {os.path.abspath(test_image_path)}")
+                except Exception as cam_error:
+                    print(f"Camera error: {str(cam_error)}")
+                    active_image_path = test_image_path
+                    print(f"Using test image due to error: {os.path.abspath(test_image_path)}")
             
-            # Save the captured frame to a temporary file if successful
-            if ret and frame is not None:
-                cv2.imwrite(temp_image_path, frame)
-                active_image_path = temp_image_path
-                print(f"Using captured camera frame: {os.path.abspath(temp_image_path)}")
+            # CASE 2: Selected image file detection
             else:
-                print(f"Camera capture failed, using test image: {os.path.abspath(test_image_path)}")
+                active_image_path = self.image_path
+                print(f"Using selected image file: {os.path.abspath(active_image_path)}")
             
             self.ui.feed_progressbar.setValue(30)
             QApplication.processEvents()
@@ -323,10 +367,9 @@ class MainWindow(QMainWindow):
                 QMessageBox.warning(self, "File Error", f"Image file not found: {active_image_path}")
                 return
             
-            # Process the image with the active image path (either temp_image_path or test_image_path)
+            # Process the image with detector
             print(f"Processing image: {os.path.abspath(active_image_path)}")
-            
-            result_image, detections = self.detector.process_image(test_image_path)
+            result_image, detections = self.detector.process_image(active_image_path)
         
             if not detections:
                 print("No detections found.")
@@ -357,7 +400,6 @@ class MainWindow(QMainWindow):
                 print(f"Detection saved to: {image_path}")
             
             QApplication.setOverrideCursor(Qt.ArrowCursor)  
-            
             
         except Exception as e:
             print(f"Detection error: {str(e)}")
@@ -522,6 +564,29 @@ class MainWindow(QMainWindow):
         
         # Add spacer
         toolbar_layout.addStretch()
+
+        # Add delete all button
+        detect_img_btn = QPushButton("Detect an image")
+        detect_img_btn.setStyleSheet('''
+            QPushButton {
+                background-color: #210F37;
+                text-align: center;
+                border-radius: 14px;
+                color: white;
+                font-weight: 700;
+                padding: 11px 20px;
+                font-size: 14px;
+                width: 150px;
+            }
+            QPushButton:hover {
+                border-color: #4F1C51;
+                background-color: #4F1C51;
+            }
+        ''')
+        detect_img_btn.setCursor(Qt.PointingHandCursor)
+        detect_img_btn.clicked.connect(self.open_image_file)  # Connect to the method to open image file
+
+        toolbar_layout.addWidget(detect_img_btn)
         
         # Block signals temporarily to prevent recursive filtering
         date_filter.blockSignals(True)
@@ -676,6 +741,31 @@ class MainWindow(QMainWindow):
         
         # Set team information
         self.set_about_team_info()
+
+        # Set frame style
+        self.ui.about_ics_frame.setFrameShape(QFrame.StyledPanel)
+        self.ui.about_ics_frame.setFrameShadow(QFrame.Raised)
+        shadow = QGraphicsDropShadowEffect(self)
+        shadow.setBlurRadius(20)
+        shadow.setXOffset(0)
+        shadow.setYOffset(2)
+        shadow.setColor(QColor(0, 0, 0, 10))  # semi-transparent black
+        self.ui.about_ics_frame.setGraphicsEffect(shadow)
+
+        self.ui.about_ipb_frame.setFrameShape(QFrame.StyledPanel)
+        self.ui.about_ipb_frame.setFrameShadow(QFrame.Raised)
+        shadow = QGraphicsDropShadowEffect(self)
+        shadow.setBlurRadius(20)
+        shadow.setXOffset(0)
+        shadow.setYOffset(2)
+        shadow.setColor(QColor(0, 0, 0, 10))  # semi-transparent black
+        self.ui.about_ipb_frame.setGraphicsEffect(shadow)
+
+        self.ui.ics_logo_label.setPixmap(QPixmap(ICS_LOGO))
+        self.ui.ics_logo_label.setScaledContents(True)
+        self.ui.ipb_logo_label.setPixmap(QPixmap(IPB_LOGO))
+        self.ui.ipb_logo_label.setScaledContents(True)
+
         
         # Add to stacked widget
         self.ui.pages.addWidget(self.ui.about_section_frame)

@@ -83,8 +83,6 @@ QListWidget,
 QLineEdit {
   /* border: none; */
   border: 1px solid;
-  border-top-left-radius: 5px;
-  border-bottom-left-radius: 5px;
   border-color: #210F37;
   padding: 10px 20px;
 }
@@ -193,6 +191,20 @@ QLineEdit:hover {
   background-color: #f7f7f7;
 }
 
+#about_ics_frame,
+#about_ipb_frame {
+  border: none;
+  background-color: white;
+  border-radius: 14px;
+}
+
+
+#ipb_logo_label,
+#ics_logo_label {
+  max-width: 200px;
+  max-height: 200px;
+}
+
 #config_body_desc,
 #config_body_files {
   background-color: white;
@@ -213,7 +225,7 @@ QLineEdit:hover {
 }
 
 #config_body_desc {
-  max-height: 100px;
+  max-height: 50px;
 }
 
 #config_body_frame {
@@ -228,7 +240,8 @@ QLineEdit:hover {
 #config_camera_frame,
 #config_camerabtn_frame,
 #config_cfscore_frame,
-#config_cfscorebtn_frame {
+#config_cfscorebtn_frame,
+#config_camera_frame {
   border: none;
   margin-right: 20px;
 }
@@ -241,14 +254,21 @@ QLineEdit:hover {
   margin-right: 20px;
 }
 
-#config_cfscore_lineedit,
-#config_camera_lineedit {
+
+#config_camera_lineedit,
+#config_cfscore_lineedit {
   color: black;
   background-color: white;
   font-size: 14px;
 }
 
-#config_cfscore_btn,
+#config_camera_lineedit {
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+
+
+#config_cfscore_btn_add,
 #config_camera_btn {
   text-align: center;
   border-top-right-radius: 5px;
@@ -264,7 +284,22 @@ QLineEdit:hover {
   width: 80px;
 }
 
-#config_yolo_btn:hover,
+#config_cfscore_btn_sub {
+  text-align: center;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  background-color: #210F37;
+  border: 1px solid;
+  border-color: #210F37;
+  color: white;
+  font-weight: 700;
+  padding: 11px 60px;
+  font-size: 14px;
+  width: 80px;
+}
+
+#config_cfscore_btn_add:hover,
+#config_cfscore_btn_sub:hover,
 #config_camera_btn:hover {
   border-color: #4F1C51;
   background-color: #4F1C51;
