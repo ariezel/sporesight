@@ -143,7 +143,7 @@ class DetectionCard(QFrame):
                 color: white;
             }
         ''')
-        view_btn.setFixedWidth(100)
+        view_btn.setFixedWidth(120)
         
         # Connect the button to show details dialog
         if image_path and os.path.exists(image_path):
