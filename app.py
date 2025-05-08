@@ -380,8 +380,31 @@ class MainWindow(QMainWindow):
                 QMessageBox.warning(self, "Camera Error", "Could not capture frame from camera.")
                 return
             
-            # Save the captured frame to a temporary file
-            cv2.imwrite(self.temp_image_path, frame)
+            # Save the captured frame to a temporary file - fix for macOS
+            try:
+                # Ensure directory exists
+                os.makedirs(os.path.dirname(os.path.abspath(self.temp_image_path)), exist_ok=True)
+                
+                # Make a copy of the frame to avoid memory issues
+                frame_copy = frame.copy()
+                
+                # Explicitly set image format and quality
+                img_params = [cv2.IMWRITE_JPEG_QUALITY, 100]
+                success = cv2.imwrite(self.temp_image_path, frame_copy, img_params)
+                
+                if not success:
+                    print(f"Failed to write image to {self.temp_image_path}")
+                    # On macOS, try PNG as fallback
+                    success = cv2.imwrite(self.temp_image_path.replace('.jpg', '.png'), 
+                                         frame_copy, [cv2.IMWRITE_PNG_COMPRESSION, 0])
+                    if success:
+                        self.temp_image_path = self.temp_image_path.replace('.jpg', '.png')
+                        print(f"Saved as PNG instead: {self.temp_image_path}")
+                        
+            except Exception as e:
+                print(f"Error saving capture: {str(e)}")
+                QMessageBox.warning(self, "File Error", f"Could not save image: {str(e)}")
+                return
             
             self.ui.feed_progressbar.setValue(30)
             QApplication.processEvents()
@@ -405,13 +428,20 @@ class MainWindow(QMainWindow):
             self.ui.feed_progressbar.setValue(80)
             QApplication.processEvents()
             
-            # Save result image to temporary file
-            cv2.imwrite(self.result_temp_path, result_image)
+            # Save result image to temporary file - fix for macOS
+            try:
+                result_copy = result_image.copy()
+                success = cv2.imwrite(self.result_temp_path, result_copy, [cv2.IMWRITE_JPEG_QUALITY, 100])
+                
+                if not success:
+                    # Try PNG format as fallback
+                    success = cv2.imwrite(self.result_temp_path.replace('.jpg', '.png'), 
+                                         result_copy, [cv2.IMWRITE_PNG_COMPRESSION, 0])
+                    if success:
+                        self.result_temp_path = self.result_temp_path.replace('.jpg', '.png')
+            except Exception as e:
+                print(f"Error saving result: {str(e)}")
             
-            # Verify result file exists
-            if not os.path.exists(self.result_temp_path):
-                print("Warning: Could not save result image")
-
             self.ui.feed_progressbar.setValue(100)
             QApplication.setOverrideCursor(Qt.ArrowCursor)  
             save_confirmed = self.show_detection_confirmation_dialog(self.result_temp_path, detections)
