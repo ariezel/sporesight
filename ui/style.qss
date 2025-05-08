@@ -225,15 +225,15 @@ QLineEdit:hover {
   padding: 30px 40px;
 }
 
-#config_yolo_frame,
-#config_yolobtn_frame,
 #config_camera_frame,
-#config_camerabtn_frame {
+#config_camerabtn_frame,
+#config_cfscore_frame,
+#config_cfscorebtn_frame {
   border: none;
   margin-right: 20px;
 }
 
-#config_yolo_label,
+#config_cfscore_label,
 #config_camera_label {
   color: black;
   font-size: 16px;
@@ -241,13 +241,14 @@ QLineEdit:hover {
   margin-right: 20px;
 }
 
-#config_yolo_lineedit,
+#config_cfscore_lineedit,
 #config_camera_lineedit {
   color: black;
+  background-color: white;
   font-size: 14px;
 }
 
-#config_yolo_btn,
+#config_cfscore_btn,
 #config_camera_btn {
   text-align: center;
   border-top-right-radius: 5px;

@@ -162,33 +162,37 @@ class MainWindow(QMainWindow):
         self.ui.config_title.setText(option.get("name"))
         self.ui.config_desc.setText(option.get("description"))
         self.ui.config_desc.setWordWrap(True)
-        
-        # Camera configuration section
-        self.ui.config_camera_label.setText('ONNX Model Path')
-        self.ui.config_camera_lineedit.setText(self.model_name)
-        self.ui.config_camera_btn.setText('Browse')
-        self.ui.config_camera_btn.setCursor(Qt.PointingHandCursor)
-        
+            
         # Set frame style
         self.ui.config_body_desc.setFrameShape(QFrame.StyledPanel)
         self.ui.config_body_desc.setFrameShadow(QFrame.Raised)
-
         shadow = QGraphicsDropShadowEffect(self)
         shadow.setBlurRadius(20)
         shadow.setXOffset(0)
         shadow.setYOffset(2)
-        shadow.setColor(QColor(0, 0, 0, 30))  # semi-transparent black
+        shadow.setColor(QColor(0, 0, 0, 10))  # semi-transparent black
         self.ui.config_body_desc.setGraphicsEffect(shadow)
 
         self.ui.config_body_files.setFrameShape(QFrame.StyledPanel)
         self.ui.config_body_files.setFrameShadow(QFrame.Raised)
-
         shadow = QGraphicsDropShadowEffect(self)
         shadow.setBlurRadius(20)
         shadow.setXOffset(0)
         shadow.setYOffset(2)
-        shadow.setColor(QColor(0, 0, 0, 30))  # semi-transparent black
+        shadow.setColor(QColor(0, 0, 0, 10))  # semi-transparent black
         self.ui.config_body_files.setGraphicsEffect(shadow)
+
+        # Model configuration section
+        self.ui.config_camera_label.setText('ONNX Model Path')
+        self.ui.config_camera_lineedit.setText(self.model_name)
+        self.ui.config_camera_btn.setText('Browse')
+        self.ui.config_camera_btn.setCursor(Qt.PointingHandCursor)
+
+        # Confidence Score configuration section
+        self.ui.config_cfscore_label.setText('Confidence Score')
+        self.ui.config_cfscore_lineedit.setText("")
+        self.ui.config_cfscore_btn.setText('Browse')
+        self.ui.config_cfscore_btn.setCursor(Qt.PointingHandCursor)
 
         # Add config page to stacked widget
         self.ui.pages.addWidget(self.ui.config_section_frame)   # Initialize the UI class

@@ -271,6 +271,21 @@ border-radius: 15px;</string>
                <enum>QFrame::Raised</enum>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_3">
+               <property name="spacing">
+                <number>15</number>
+               </property>
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
                <item>
                 <widget class="QFrame" name="config_camera_frame">
                  <property name="frameShape">
@@ -355,90 +370,7 @@ border-radius: 15px;</string>
                 </widget>
                </item>
                <item>
-                <widget class="QFrame" name="config_camera_frame_3">
-                 <property name="frameShape">
-                  <enum>QFrame::StyledPanel</enum>
-                 </property>
-                 <property name="frameShadow">
-                  <enum>QFrame::Raised</enum>
-                 </property>
-                 <layout class="QHBoxLayout" name="horizontalLayout_20">
-                  <property name="spacing">
-                   <number>0</number>
-                  </property>
-                  <property name="leftMargin">
-                   <number>0</number>
-                  </property>
-                  <property name="topMargin">
-                   <number>0</number>
-                  </property>
-                  <property name="rightMargin">
-                   <number>0</number>
-                  </property>
-                  <property name="bottomMargin">
-                   <number>0</number>
-                  </property>
-                  <item alignment="Qt::AlignRight">
-                   <widget class="QLabel" name="config_camera_label_3">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                      <horstretch>1</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <property name="text">
-                     <string>TextLabel</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item alignment="Qt::AlignVCenter">
-                   <widget class="QFrame" name="config_camerabtn_frame_3">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                      <horstretch>4</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
-                    </property>
-                    <property name="frameShadow">
-                     <enum>QFrame::Raised</enum>
-                    </property>
-                    <layout class="QHBoxLayout" name="horizontalLayout_21">
-                     <property name="spacing">
-                      <number>0</number>
-                     </property>
-                     <property name="leftMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="topMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="rightMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="bottomMargin">
-                      <number>0</number>
-                     </property>
-                     <item>
-                      <widget class="QLineEdit" name="config_camera_lineedit_3"/>
-                     </item>
-                     <item>
-                      <widget class="QPushButton" name="config_camera_btn_3">
-                       <property name="text">
-                        <string>PushButton</string>
-                       </property>
-                      </widget>
-                     </item>
-                    </layout>
-                   </widget>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-               <item>
-                <widget class="QFrame" name="config_camera_frame_2">
+                <widget class="QFrame" name="config_cfscore_frame">
                  <property name="frameShape">
                   <enum>QFrame::StyledPanel</enum>
                  </property>
@@ -462,7 +394,7 @@ border-radius: 15px;</string>
                    <number>0</number>
                   </property>
                   <item alignment="Qt::AlignRight">
-                   <widget class="QLabel" name="config_camera_label_2">
+                   <widget class="QLabel" name="config_cfscore_label">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                       <horstretch>1</horstretch>
@@ -475,7 +407,7 @@ border-radius: 15px;</string>
                    </widget>
                   </item>
                   <item alignment="Qt::AlignVCenter">
-                   <widget class="QFrame" name="config_camerabtn_frame_2">
+                   <widget class="QFrame" name="config_cfscorebtn_frame">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                       <horstretch>4</horstretch>
@@ -505,10 +437,10 @@ border-radius: 15px;</string>
                       <number>0</number>
                      </property>
                      <item>
-                      <widget class="QLineEdit" name="config_camera_lineedit_2"/>
+                      <widget class="QLineEdit" name="config_cfscore_lineedit"/>
                      </item>
                      <item>
-                      <widget class="QPushButton" name="config_camera_btn_2">
+                      <widget class="QPushButton" name="config_cfscore_btn">
                        <property name="text">
                         <string>PushButton</string>
                        </property>
