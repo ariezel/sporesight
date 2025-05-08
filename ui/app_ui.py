@@ -43,7 +43,9 @@ class Ui_MainWindow(object):
         self.title_frame.setFrameShape(QFrame.StyledPanel)
         self.title_frame.setFrameShadow(QFrame.Raised)
         self.horizontalLayout = QHBoxLayout(self.title_frame)
+        self.horizontalLayout.setSpacing(0)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
         self.menu_btn = QPushButton(self.title_frame)
         self.menu_btn.setObjectName(u"menu_btn")
 

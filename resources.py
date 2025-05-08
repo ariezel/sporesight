@@ -151,10 +151,8 @@ MENU = [
         "default_icon": SETTING_ICON,
         "selected_icon": SETTING_ICON_SELECTED,
         "description": """
-            Input your preferred YOLO configuration file and the camera RTSP Link
-
-            Camera RTSP Link is already given since it is the default stream URL for the ToupTek Microscope Camera
-        """, 
+            Input your preferred <b>ONNX model</b> and <b>confidence score</b>
+          """, 
     }
 ]
 

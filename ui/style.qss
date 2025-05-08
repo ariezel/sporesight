@@ -213,7 +213,7 @@ QLineEdit:hover {
 }
 
 #config_body_desc {
-  max-height: 130px;
+  max-height: 100px;
 }
 
 #config_body_frame {
