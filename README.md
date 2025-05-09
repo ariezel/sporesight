@@ -24,7 +24,6 @@ rtsp://192.168.7.1:554/axis-media/media.amp?streamprofile=Quality
 > For testing purposes, the stream URL is currently set to **0**
 
 ## Usage
-
 [1] Run the following command ``` python main.py ``` (in Windows) or ```python3 main.py``` (in MacOS)
 
 [2] Provide **[model_name].onnx**, **classes.txt**, and your preferred **confidence score** in the **Configuration Section**
