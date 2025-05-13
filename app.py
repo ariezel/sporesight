@@ -14,8 +14,8 @@ from processing import YoloDetector
 output_path = "./test/output/0003.jpg"
 
 class MainWindow(QMainWindow):
-#rtsp://192.168.7.1:554/axis-media/media.amp?streamprofile=Quality
-    def __init__(self, stream_url="0"):
+    #rtsp://192.168.7.1:554/axis-media/media.amp?streamprofile=Quality
+    def __init__(self, stream_url="rtsp://192.168.7.1:554/axis-media/media.amp?streamprofile=Quality"):
         super().__init__() 
 
         # Initialize class attributes
