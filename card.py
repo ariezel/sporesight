@@ -95,7 +95,7 @@ class DetectionCard(QFrame):
         # Detection summary
         summary_label = QLabel(f"{len(detections)} Detection{'s' if len(detections) != 1 else ''}")
         summary_label.setAlignment(Qt.AlignLeft)
-        summary_label.setFont(QFont("Arial", 12, QFont.Bold))
+        summary_label.setFont(QFont("Arial", 14, QFont.Bold))
         summary_label.setStyleSheet("color: #4F1C51; padding-top: 10px")
         layout.addWidget(summary_label)
         
@@ -118,7 +118,7 @@ class DetectionCard(QFrame):
         classes_label = QLabel(classes_text)
         classes_label.setWordWrap(True)
         classes_label.setAlignment(Qt.AlignLeft)
-        classes_label.setStyleSheet("color: #666; padding-left: 2px")
+        classes_label.setStyleSheet("color: #666; padding-left: 2px; font-size: 14px;")
         layout.addWidget(classes_label)
         
         # Add spacer
