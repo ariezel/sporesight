@@ -29,11 +29,9 @@ class YoloDetector:
         if not self.model_path or not os.path.exists(self.model_path):
             raise FileNotFoundError(f"ONNX model not found. Please provide a valid model path.")
         
-        if not self.class_names:
-            raise ValueError(f"Class names could not be loaded. Please check the class file.")
-        
-        print(f'Confidence Score Threshold:     {self.conf_threshold}')
+        print(f'Class Names:    {self.class_names}')
         print(f'Loading ONNX model from:     {self.model_path}')
+        print(f'Confidence Score Threshold:     {self.conf_threshold}')
 
         self.load_onnx_model()
     

@@ -474,13 +474,9 @@ class MainWindow(QMainWindow):
     ''' Initialize Analytics UI with menu options for managing detection images '''
     def init_analytics_page(self, option):
         self.ui.analytics_title.setText(option.get("name"))
-        
-        # Make sure analytics section has a layout
         if self.ui.analytics_section_frame.layout() is None:
             layout = QVBoxLayout(self.ui.analytics_section_frame)
             self.ui.analytics_section_frame.setLayout(layout)
-        
-        # Add to stacked widget
         self.ui.pages.addWidget(self.ui.analytics_section_frame)
         
         # Load detection data
