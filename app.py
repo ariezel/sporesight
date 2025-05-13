@@ -14,7 +14,7 @@ from processing import YoloDetector
 output_path = "./test/output/0003.jpg"
 
 class MainWindow(QMainWindow):
-
+#rtsp://192.168.7.1:554/axis-media/media.amp?streamprofile=Quality
     def __init__(self, stream_url="0"):
         super().__init__() 
 
@@ -313,7 +313,6 @@ class MainWindow(QMainWindow):
         self.ui.feed_model_title.setText("<b>ACTIVE MODEL </b>")
         self.ui.feed_model_content.setText("<i>None</i>")
         
-
         # Setup camera controls
         self.ui.feed_detect_btn.setText("Detect")
         self.ui.feed_stop_btn.setText("Start Feed")
@@ -333,17 +332,8 @@ class MainWindow(QMainWindow):
         self.ui.feed_detect_btn.setStyleSheet(DEFAULT_STYLE)
         self.ui.feed_stop_btn.setStyleSheet(COMPLETED_STYLE)
         
-        # Initialize camera thread
-        self.init_camera_thread()
-        
         # Add feed page to stacked widget
         self.ui.pages.addWidget(self.ui.feed_section_frame)
-
-    ''' Initialize the camera thread for video streaming '''
-    def init_camera_thread(self):
-        if not self.camera_thread:
-            self.camera_thread = CameraThread(self.stream_url)
-            self.camera_thread.imageUpdate.connect(self.update_camera_image)
 
     ''' Toggle camera feed on/off '''
     @Slot()
@@ -352,14 +342,19 @@ class MainWindow(QMainWindow):
         if self.feed_stop_active:
             if self.camera_thread and self.camera_thread.isRunning():
                 self.camera_thread.stop()
+            self.ui.statusBar.showMessage("Stopped camera thread")
             self.ui.feed_stop_btn.setText("Start Feed")
             self.ui.feed_stop_btn.setStyleSheet(COMPLETED_STYLE)
         else:
             if not self.camera_thread:
-                self.init_camera_thread()
+                self.camera_thread = CameraThread(self.stream_url)
+                self.camera_thread.imageUpdate.connect(self.update_camera_image)
+            self.ui.statusBar.showMessage("Initialized camera thread")
             self.camera_thread.start()
             self.ui.feed_stop_btn.setText("Stop Feed")
             self.ui.feed_stop_btn.setStyleSheet(DEFAULT_STYLE)
+            self.ui.statusBar.showMessage(self.camera_thread.get_status_bar())
+            print(self.camera_thread.get_status_bar())
     
     '''Update the camera feed image'''
     @Slot(object)

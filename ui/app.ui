@@ -120,7 +120,7 @@
     <item row="0" column="3" rowspan="2">
      <widget class="QStackedWidget" name="pages">
       <property name="currentIndex">
-       <number>3</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="config_page">
        <widget class="QFrame" name="config_section_frame">
@@ -1785,6 +1785,7 @@ border-radius: 15px;</string>
     </item>
    </layout>
   </widget>
+  <widget class="QStatusBar" name="statusBar"/>
  </widget>
  <resources/>
  <connections/>

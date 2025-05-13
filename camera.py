@@ -13,6 +13,7 @@ class CameraThread(QThread):
         self.stream_url = url 
         self.CameraThreadActive = None  
         self.frame = None
+        self.status_bar = "Opened camera stream at " + str(self.stream_url)
 
     def run(self):
         self.CameraThreadActive = True
@@ -22,7 +23,6 @@ class CameraThread(QThread):
             if self.stream_url.isdigit():
                 camera_source = int(self.stream_url)
                 
-            print(f"Opening camera stream at {camera_source}")
             capture = cv2.VideoCapture(camera_source)
             
             if not capture.isOpened():
@@ -90,3 +90,9 @@ class CameraThread(QThread):
     
     def get_frame(self):
         return self.frame
+    
+    def set_status_bar(self, text):
+        self.status_bar = text
+    
+    def get_status_bar(self):
+        return self.status_bar
