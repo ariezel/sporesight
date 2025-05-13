@@ -182,9 +182,9 @@ class MainWindow(QMainWindow):
         self.ui.config_body_files.setGraphicsEffect(shadow)
 
         # Show current configuration
-        self.ui.config_curr_classfile.setText("<b>Current Class File: </b>")
-        self.ui.config_curr_model.setText("<b>Current Model File: </b>")
-        self.ui.class_label.setText("<b>Classes: </b>")
+        self.ui.config_curr_classfile.setText("⬜ <b>Current Class File: </b>")
+        self.ui.config_curr_model.setText("⬜ <b>Current Model File: </b>")
+        self.ui.class_label.setText("⬜ <b>Classes: </b>")
         self.ui.classfile.setText("Select a text file containing class names <i>(e.g. classes.txt)</i>")
         self.ui.model_name.setText("Select an ONNX model file <i>(e.g. yolov5.onnx)</i>")
         self.ui.class_list.setText("<i>None</i>")
@@ -224,9 +224,11 @@ class MainWindow(QMainWindow):
         if file_name:
             base_name = os.path.basename(file_name)
             self.ui.model_name.setText(base_name)
+            self.ui.feed_model_content.setText(base_name)
             self.ui.config_camera_lineedit.setText(file_name)
             self.model_name = file_name
-
+            self.ui.config_curr_model.setText("✅ <b>Current Model File: </b>")
+        
     '''Open file dialog to select class file'''
     def open_class_file(self):
         options = QFileDialog.Options()
@@ -237,7 +239,12 @@ class MainWindow(QMainWindow):
             self.ui.classfile.setText(base_name)
             self.ui.config_classes_lineedit.setText(file_name)
             self.class_names = self.load_class_names(file_name)
-
+            self.ui.class_list.setText(", ".join(self.class_names))
+            self.ui.feed_classes_content.setText("\n".join(self.class_names))
+            self.ui.class_list.setWordWrap(True)
+            self.ui.config_curr_classfile.setText("✅ <b>Current Class File: </b>")
+            self.ui.class_label.setText("✅ <b>Classes: </b>")
+            
     '''Open file dialog to select image file'''
     def open_image_file(self):
         try:
@@ -282,19 +289,18 @@ class MainWindow(QMainWindow):
         self.ui.feed_title.setText(option.get("name"))
             
         # Set frame style
-        self.ui.feed_results.setText(CAMERA_DESCRIPTION)
-        self.ui.feed_results.setWordWrap(True)  
-        self.ui.results_desc_frame.setFrameShape(QFrame.StyledPanel)
-        self.ui.results_desc_frame.setFrameShadow(QFrame.Raised)
+        self.ui.feed_classes_title.setText("<b>CLASSES</b><br>")
+        self.ui.feed_classes_content.setWordWrap(True)  
+        self.ui.feed_classes_content.setText("<i>None</i>")
+        self.ui.feed_model_frame.setFrameShape(QFrame.StyledPanel)
+        self.ui.feed_model_frame.setFrameShadow(QFrame.Raised)
         shadow = QGraphicsDropShadowEffect(self)
         shadow.setBlurRadius(20)
         shadow.setXOffset(0)
         shadow.setYOffset(2)
         shadow.setColor(QColor(0, 0, 0, 10))  # semi-transparent black
-        self.ui.results_desc_frame.setGraphicsEffect(shadow)
-
-        self.ui.feed_classes_content.setText(CAMERA_DESCRIPTION)
-        self.ui.feed_classes_content.setWordWrap(True)  
+        self.ui.feed_model_frame.setGraphicsEffect(shadow)
+        
         self.ui.feed_classes_frame.setFrameShape(QFrame.StyledPanel)
         self.ui.feed_classes_frame.setFrameShadow(QFrame.Raised)
         shadow = QGraphicsDropShadowEffect(self)
@@ -303,6 +309,10 @@ class MainWindow(QMainWindow):
         shadow.setYOffset(2)
         shadow.setColor(QColor(0, 0, 0, 10))  # semi-transparent black
         self.ui.feed_classes_frame.setGraphicsEffect(shadow)
+
+        self.ui.feed_model_title.setText("<b>ACTIVE MODEL </b>")
+        self.ui.feed_model_content.setText("<i>None</i>")
+        
 
         # Setup camera controls
         self.ui.feed_detect_btn.setText("Detect")
@@ -407,7 +417,6 @@ class MainWindow(QMainWindow):
             print(f"Processing image: {os.path.abspath(self.temp_image_path)}")
             
             # Process the image
-            
             result_image, detections = self.detector.process_image(self.temp_image_path)
         
             if not detections:
