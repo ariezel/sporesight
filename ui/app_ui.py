@@ -33,7 +33,7 @@ class Ui_MainWindow(object):
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
         self.maximizedmenu = QListWidget(self.centralwidget)
         self.maximizedmenu.setObjectName(u"maximizedmenu")
-        self.maximizedmenu.setMinimumSize(QSize(0, 0))
+        self.maximizedmenu.setMinimumSize(QSize(250, 0))
         self.maximizedmenu.setMaximumSize(QSize(250, 16777215))
 
         self.gridLayout.addWidget(self.maximizedmenu, 1, 2, 1, 1)
@@ -71,7 +71,7 @@ class Ui_MainWindow(object):
 
         self.minimizedmenu = QListWidget(self.centralwidget)
         self.minimizedmenu.setObjectName(u"minimizedmenu")
-        self.minimizedmenu.setMinimumSize(QSize(0, 0))
+        self.minimizedmenu.setMinimumSize(QSize(75, 0))
         self.minimizedmenu.setMaximumSize(QSize(75, 16777215))
 
         self.gridLayout.addWidget(self.minimizedmenu, 1, 1, 1, 1)
@@ -82,7 +82,7 @@ class Ui_MainWindow(object):
         self.config_page.setObjectName(u"config_page")
         self.config_section_frame = QFrame(self.config_page)
         self.config_section_frame.setObjectName(u"config_section_frame")
-        self.config_section_frame.setGeometry(QRect(0, 0, 1121, 841))
+        self.config_section_frame.setGeometry(QRect(0, 0, 361, 295))
         self.config_section_frame.setFrameShape(QFrame.StyledPanel)
         self.config_section_frame.setFrameShadow(QFrame.Raised)
         self.verticalLayout = QVBoxLayout(self.config_section_frame)
@@ -119,11 +119,11 @@ class Ui_MainWindow(object):
         self.verticalLayout_2.setContentsMargins(0, 10, 0, 0)
         self.config_body_desc = QFrame(self.config_body_frame)
         self.config_body_desc.setObjectName(u"config_body_desc")
-        self.config_body_desc.setMaximumSize(QSize(16777215, 60))
+        self.config_body_desc.setMaximumSize(QSize(16777215, 200))
         self.config_body_desc.setFrameShape(QFrame.StyledPanel)
         self.config_body_desc.setFrameShadow(QFrame.Raised)
         self.verticalLayout_4 = QVBoxLayout(self.config_body_desc)
-        self.verticalLayout_4.setSpacing(0)
+        self.verticalLayout_4.setSpacing(10)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
         self.verticalLayout_4.setContentsMargins(0, 0, 0, 0)
         self.config_desc = QLabel(self.config_body_desc)
@@ -131,6 +131,78 @@ class Ui_MainWindow(object):
         self.config_desc.setMaximumSize(QSize(16777215, 16777215))
 
         self.verticalLayout_4.addWidget(self.config_desc)
+
+        self.config_model = QHBoxLayout()
+        self.config_model.setSpacing(0)
+        self.config_model.setObjectName(u"config_model")
+        self.config_curr_model = QLabel(self.config_body_desc)
+        self.config_curr_model.setObjectName(u"config_curr_model")
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
+        sizePolicy.setHorizontalStretch(1)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.config_curr_model.sizePolicy().hasHeightForWidth())
+        self.config_curr_model.setSizePolicy(sizePolicy)
+        self.config_curr_model.setMaximumSize(QSize(16777215, 16777215))
+
+        self.config_model.addWidget(self.config_curr_model)
+
+        self.model_name = QLabel(self.config_body_desc)
+        self.model_name.setObjectName(u"model_name")
+        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
+        sizePolicy1.setHorizontalStretch(4)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.model_name.sizePolicy().hasHeightForWidth())
+        self.model_name.setSizePolicy(sizePolicy1)
+        self.model_name.setMaximumSize(QSize(16777215, 16777215))
+
+        self.config_model.addWidget(self.model_name)
+
+
+        self.verticalLayout_4.addLayout(self.config_model)
+
+        self.config_classes = QHBoxLayout()
+        self.config_classes.setSpacing(0)
+        self.config_classes.setObjectName(u"config_classes")
+        self.config_curr_classfile = QLabel(self.config_body_desc)
+        self.config_curr_classfile.setObjectName(u"config_curr_classfile")
+        sizePolicy.setHeightForWidth(self.config_curr_classfile.sizePolicy().hasHeightForWidth())
+        self.config_curr_classfile.setSizePolicy(sizePolicy)
+        self.config_curr_classfile.setMaximumSize(QSize(16777215, 16777215))
+
+        self.config_classes.addWidget(self.config_curr_classfile)
+
+        self.classfile = QLabel(self.config_body_desc)
+        self.classfile.setObjectName(u"classfile")
+        sizePolicy1.setHeightForWidth(self.classfile.sizePolicy().hasHeightForWidth())
+        self.classfile.setSizePolicy(sizePolicy1)
+        self.classfile.setMaximumSize(QSize(16777215, 16777215))
+
+        self.config_classes.addWidget(self.classfile)
+
+
+        self.verticalLayout_4.addLayout(self.config_classes)
+
+        self.classes_content = QHBoxLayout()
+        self.classes_content.setSpacing(0)
+        self.classes_content.setObjectName(u"classes_content")
+        self.class_label = QLabel(self.config_body_desc)
+        self.class_label.setObjectName(u"class_label")
+        sizePolicy.setHeightForWidth(self.class_label.sizePolicy().hasHeightForWidth())
+        self.class_label.setSizePolicy(sizePolicy)
+        self.class_label.setMaximumSize(QSize(16777215, 16777215))
+
+        self.classes_content.addWidget(self.class_label)
+
+        self.class_list = QLabel(self.config_body_desc)
+        self.class_list.setObjectName(u"class_list")
+        sizePolicy1.setHeightForWidth(self.class_list.sizePolicy().hasHeightForWidth())
+        self.class_list.setSizePolicy(sizePolicy1)
+        self.class_list.setMaximumSize(QSize(16777215, 16777215))
+
+        self.classes_content.addWidget(self.class_list)
+
+
+        self.verticalLayout_4.addLayout(self.classes_content)
 
 
         self.verticalLayout_2.addWidget(self.config_body_desc)
@@ -154,9 +226,6 @@ class Ui_MainWindow(object):
         self.horizontalLayout_16.setContentsMargins(0, 0, 0, 0)
         self.config_camera_label = QLabel(self.config_camera_frame)
         self.config_camera_label.setObjectName(u"config_camera_label")
-        sizePolicy = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
-        sizePolicy.setHorizontalStretch(1)
-        sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.config_camera_label.sizePolicy().hasHeightForWidth())
         self.config_camera_label.setSizePolicy(sizePolicy)
 
@@ -164,9 +233,6 @@ class Ui_MainWindow(object):
 
         self.config_camerabtn_frame = QFrame(self.config_camera_frame)
         self.config_camerabtn_frame.setObjectName(u"config_camerabtn_frame")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
-        sizePolicy1.setHorizontalStretch(4)
-        sizePolicy1.setVerticalStretch(0)
         sizePolicy1.setHeightForWidth(self.config_camerabtn_frame.sizePolicy().hasHeightForWidth())
         self.config_camerabtn_frame.setSizePolicy(sizePolicy1)
         self.config_camerabtn_frame.setFrameShape(QFrame.StyledPanel)
@@ -342,7 +408,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_7.setContentsMargins(0, 0, 0, 0)
         self.feed_label = QLabel(self.feed_camera)
         self.feed_label.setObjectName(u"feed_label")
-        self.feed_label.setMinimumSize(QSize(3, 0))
+        self.feed_label.setMinimumSize(QSize(0, 0))
 
         self.verticalLayout_7.addWidget(self.feed_label)
 
@@ -353,34 +419,36 @@ class Ui_MainWindow(object):
         self.feed_body_desc.setObjectName(u"feed_body_desc")
         sizePolicy.setHeightForWidth(self.feed_body_desc.sizePolicy().hasHeightForWidth())
         self.feed_body_desc.setSizePolicy(sizePolicy)
-        self.feed_body_desc.setMinimumSize(QSize(0, 0))
+        self.feed_body_desc.setMinimumSize(QSize(250, 0))
         self.feed_body_desc.setMaximumSize(QSize(16777215, 16777215))
         self.feed_body_desc.setFrameShape(QFrame.StyledPanel)
         self.feed_body_desc.setFrameShadow(QFrame.Raised)
         self.verticalLayout_21 = QVBoxLayout(self.feed_body_desc)
-        self.verticalLayout_21.setSpacing(0)
+        self.verticalLayout_21.setSpacing(10)
         self.verticalLayout_21.setObjectName(u"verticalLayout_21")
         self.verticalLayout_21.setContentsMargins(0, 0, 0, 0)
-        self.feed_desc_frame = QFrame(self.feed_body_desc)
-        self.feed_desc_frame.setObjectName(u"feed_desc_frame")
+        self.feed_classes_frame = QFrame(self.feed_body_desc)
+        self.feed_classes_frame.setObjectName(u"feed_classes_frame")
         sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
         sizePolicy3.setHorizontalStretch(0)
         sizePolicy3.setVerticalStretch(0)
-        sizePolicy3.setHeightForWidth(self.feed_desc_frame.sizePolicy().hasHeightForWidth())
-        self.feed_desc_frame.setSizePolicy(sizePolicy3)
-        self.feed_desc_frame.setMaximumSize(QSize(16777215, 60))
-        self.feed_desc_frame.setFrameShape(QFrame.StyledPanel)
-        self.feed_desc_frame.setFrameShadow(QFrame.Raised)
-        self.horizontalLayout_5 = QHBoxLayout(self.feed_desc_frame)
-        self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
-        self.feed_desc = QLabel(self.feed_desc_frame)
-        self.feed_desc.setObjectName(u"feed_desc")
-        self.feed_desc.setMaximumSize(QSize(16777215, 60))
+        sizePolicy3.setHeightForWidth(self.feed_classes_frame.sizePolicy().hasHeightForWidth())
+        self.feed_classes_frame.setSizePolicy(sizePolicy3)
+        self.feed_classes_frame.setMaximumSize(QSize(16777215, 16777215))
+        self.feed_classes_frame.setFrameShape(QFrame.StyledPanel)
+        self.feed_classes_frame.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_10 = QHBoxLayout(self.feed_classes_frame)
+        self.horizontalLayout_10.setSpacing(0)
+        self.horizontalLayout_10.setObjectName(u"horizontalLayout_10")
+        self.horizontalLayout_10.setContentsMargins(0, 0, 0, 0)
+        self.feed_classes_content = QLabel(self.feed_classes_frame)
+        self.feed_classes_content.setObjectName(u"feed_classes_content")
+        self.feed_classes_content.setMaximumSize(QSize(16777215, 16777215))
 
-        self.horizontalLayout_5.addWidget(self.feed_desc)
+        self.horizontalLayout_10.addWidget(self.feed_classes_content)
 
 
-        self.verticalLayout_21.addWidget(self.feed_desc_frame)
+        self.verticalLayout_21.addWidget(self.feed_classes_frame)
 
         self.results_desc_frame = QFrame(self.feed_body_desc)
         self.results_desc_frame.setObjectName(u"results_desc_frame")
@@ -396,7 +464,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_6.addWidget(self.feed_results)
 
 
-        self.verticalLayout_21.addWidget(self.results_desc_frame, 0, Qt.AlignTop)
+        self.verticalLayout_21.addWidget(self.results_desc_frame)
 
         self.feed_bottom_frame = QFrame(self.feed_body_desc)
         self.feed_bottom_frame.setObjectName(u"feed_bottom_frame")
@@ -741,6 +809,12 @@ class Ui_MainWindow(object):
         self.label.setText("")
         self.config_title.setText("")
         self.config_desc.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
+        self.config_curr_model.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
+        self.model_name.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
+        self.config_curr_classfile.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
+        self.classfile.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
+        self.class_label.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
+        self.class_list.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
         self.config_camera_label.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
         self.config_camera_btn.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
         self.config_classes_label.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
@@ -750,7 +824,7 @@ class Ui_MainWindow(object):
         self.config_cfscore_btn_add.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
         self.feed_title.setText("")
         self.feed_label.setText("")
-        self.feed_desc.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
+        self.feed_classes_content.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
         self.feed_results.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
         self.feed_detect_btn.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
         self.feed_stop_btn.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))

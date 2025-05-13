@@ -28,6 +28,7 @@ QPushButton{
   padding-top: 16px;
   text-align: left;
   padding-bottom: 10px;
+  font-size: 13px;
 }
 
 /*  HANDLE BAR VERTICAL */
@@ -212,20 +213,25 @@ QLineEdit:hover {
   padding-top: 15px;
   padding-right: 10px;
   padding-left: 10px;
-  padding-bottom: 5px;
+  padding-bottom: 15px;
 }
 
 #config_desc,
 #feed_desc,
 #analytics_desc,
-#about_desc {
+#about_desc,
+#config_curr_classfile,
+#config_curr_model,
+#class_label {
   color: black;
-  font-size: 18px;
-  padding: 10px 15px;
+  font-size: 16px;
+  padding-left: 25px;;
 }
 
-#config_body_desc {
-  max-height: 50px;
+#model_name,
+#classfile,
+#class_list {
+  font-size: 16px;
 }
 
 #config_body_frame {
@@ -257,17 +263,18 @@ QLineEdit:hover {
 }
 
 #config_camera_lineedit,
-#config_cfscore_lineedit,
 #config_classes_lineedit {
   color: gray;
   background-color: white;
-  font-size: 14px;
-}
-
-#config_camera_lineedit,
-#config_classes_lineedit {
+  font-size: 16px;
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
+}
+
+#config_cfscore_lineedit {
+  color: #210F37;
+  background-color: white;
+  font-size: 16px;
 }
 
 #config_cfscore_btn_add,
@@ -282,7 +289,7 @@ QLineEdit:hover {
   margin-right: 20px;
   color: white;
   font-weight: 700;
-  padding: 11px 60px;
+  padding: 12px 60px;
   font-size: 14px;
   width: 80px;
 }
@@ -296,7 +303,7 @@ QLineEdit:hover {
   border-color: #210F37;
   color: white;
   font-weight: 700;
-  padding: 11px 60px;
+  padding: 12px 60px;
   font-size: 14px;
   width: 80px;
 }
@@ -320,13 +327,7 @@ QLineEdit:hover {
   font-weight: 700;
 }
 
-#feed_label {
-  color: black;
-  font-size: 18px;
-}
-
-#feed_camera,
-#results_desc_frame {
+#feed_camera {
   border: none;
   background-color: #f7f7f7;
 }
@@ -343,15 +344,19 @@ QLineEdit:hover {
   background-color: #f7f7f7;
 }
 
-#feed_results {
+#results_desc_frame,
+#feed_classes_frame {
   background-color: white;
-  border: 1px solid #ddd;
   border-radius: 8px;
-  padding: 15px;
-  margin: 10px 0;
-  font-size: 14px;
+  padding: 20px;
+}
+
+#feed_results,
+#feed_classes_content {
+  font-size: 16px;
   line-height: 1.5;
   color: #444;
+
 }
 
 #analytics_body_content {

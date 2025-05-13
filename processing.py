@@ -7,24 +7,7 @@ from pathlib import Path
 
 from resources import COLORS
 
-''' Load class names from file '''
-def load_class_names(classfile_path):
-    default_class_names = ["unknown"]
-    try:
-        class_names_file = classfile_path
-        with open(class_names_file, 'r') as f:
-            class_names = [line.strip() for line in f.readlines()]
-        if not class_names:
-            print(f"Warning: Class names file is empty. Using default class names.")
-            return default_class_names
-        return class_names
-        
-    except FileNotFoundError:
-        print(f"Warning: Class names file not found. Using default class names.")
-        return default_class_names
-    except Exception as e:
-        print(f"Error loading class names: {str(e)}. Using default class names.")
-        return default_class_names
+
 
 ''' Class to handle YOLO object detection using ONNX Runtime '''
 class YoloDetector:
@@ -36,15 +19,18 @@ class YoloDetector:
         - model_path: Path to the ONNX model file. If None, will look in default locations.
         '''
         self.class_names = class_names
+        self.model_path = model_path
         self.colors = COLORS
         self.onnx_session = None
         self.expected_image_shape = None
         self.conf_threshold = float(conf_threshold)
 
         # Save model path and initialize ONNX Runtime session
-        self.model_path = model_path
-        if not model_path or not os.path.exists(model_path):
+        if not self.model_path or not os.path.exists(self.model_path):
             raise FileNotFoundError(f"ONNX model not found. Please provide a valid model path.")
+        
+        if not self.class_names:
+            raise ValueError(f"Class names could not be loaded. Please check the class file.")
         
         print(f'Confidence Score Threshold:     {self.conf_threshold}')
         print(f'Loading ONNX model from:     {self.model_path}')
@@ -104,6 +90,11 @@ class YoloDetector:
         # Check if ONNX session is loaded
         if not self.onnx_session or not self.expected_image_shape:
             raise RuntimeError("ONNX model not initialized properly")
+
+        # Check if expected_image_shape contains strings instead of integers
+        if isinstance(self.expected_image_shape[0], str) or isinstance(self.expected_image_shape[1], str):
+            print("Warning: Expected image shape contains string values. Using default dimensions (640, 640).")
+            self.expected_image_shape = (640, 640)
         
         # Read and preprocess image
         original_image = cv2.imread(image_path)
@@ -314,3 +305,5 @@ class YoloDetector:
 
         # Put text on top
         cv2.putText(img, label, (x, y - 5), font, font_scale, (255, 255, 255), thickness)  # white text
+    
+    

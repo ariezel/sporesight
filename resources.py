@@ -139,7 +139,7 @@ MENU = [
         "name": "     Configuration", 
         "default_icon": SETTING_ICON,
         "selected_icon": SETTING_ICON_SELECTED,
-        "description": """Input your preferred <b>ONNX model</b> and <b>confidence score</b>""", 
+        "description": """Input your preferred <b>ONNX model, classes,</b> and <b>confidence score</b>""", 
     },
     { 
         "name": "     Camera View", 
@@ -186,11 +186,12 @@ ABOUT = [
 ]
 
 CAMERA_DESCRIPTION = """
-1) Click the START button to view the camera feed
+<b> INSTRUCTIONS </b><br><br>
+1) Click the <b>START</b> button to view the camera feed<br><br>
 
-2) The DETECT button will be used for image analysis
-   - The camera will take a snapshot of the current frame and analyze it using the ONNX model
-    - The results will be displayed in a dialog and in the analytics page
+2) The <b>DETECT</b> button will be used for image analysis<br>
+      • The camera will take a snapshot of the current frame and analyze it using the ONNX model<br>
+      • The results will be displayed in a dialog and in the analytics page<br><br>
 
-3) Press START FEED again to continue your search
+3) Press <b>START FEED</b> again to continue your search
 """

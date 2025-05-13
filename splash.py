@@ -8,13 +8,10 @@ from app import MainWindow
 splash_counter = 0
 
 class Splash(QMainWindow):
-    def __init__(self, model_name=None):
+    def __init__(self):
         super().__init__()
         self.ui = Ui_Splash()
         self.ui.setupUi(self)
-        
-        # Store model name to pass to MainWindow
-        self.model_name = model_name
 
         # Set the splash screen into frameless window
         self.setWindowFlag(Qt.FramelessWindowHint)
@@ -112,7 +109,7 @@ class Splash(QMainWindow):
     
     def on_fade_out_finished(self):
         # Start main window and close splash
-        self.main = MainWindow(self.model_name)
+        self.main = MainWindow()
         self.main.showMaximized()
         self.close()
     

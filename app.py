@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import *
 from PySide6.QtGui import *
 from PySide6.QtCore import *
-from camera import CameraThread  # Import CameraThread
+from camera import CameraThread 
 from card import *
 from detection import DetectionManager
 from resources import *
@@ -15,16 +15,15 @@ output_path = "./test/output/0003.jpg"
 
 class MainWindow(QMainWindow):
 
-    def __init__(self, model_name, stream_url="0"):
+    def __init__(self, stream_url="0"):
         super().__init__() 
 
         # Initialize class attributes
         self.title = "SporeSight"
-        self.model_name = model_name
+        self.model_name = None
+        self.class_names = None
         self.image_path = ""
         self.stream_url = stream_url
-        self.detection_history = []
-        self.max_history = 20
         self.camera_thread = None
         self.detector = None
         self.detection_manager = DetectionManager()
@@ -99,7 +98,6 @@ class MainWindow(QMainWindow):
     
     ''' Change icon of selected menu item '''
     def update_menu_icons(self, index):
-        '''Update menu icons based on selection'''
         for i in range(self.ui.maximizedmenu.count()):
             icon = MENU[i]["selected_icon"] if i == index else MENU[i]["default_icon"]
             self.ui.maximizedmenu.item(i).setIcon(QPixmap(icon))
@@ -114,7 +112,6 @@ class MainWindow(QMainWindow):
     
     ''' Initialize side menu '''
     def init_menu(self, menu_list):
-        '''Initialize the side menu with items from menu_list'''
         self.ui.maximizedmenu.clear()
         self.ui.minimizedmenu.clear()
         
@@ -138,8 +135,7 @@ class MainWindow(QMainWindow):
     def init_content_pages(self, menu_list):
         # Clear existing widgets
         self.clear_stacked_widget()
-        
-        # Add pages based on menu items
+
         for option in menu_list:
             page_name = option.get("name").strip()
             
@@ -185,6 +181,14 @@ class MainWindow(QMainWindow):
         shadow.setColor(QColor(0, 0, 0, 10))  # semi-transparent black
         self.ui.config_body_files.setGraphicsEffect(shadow)
 
+        # Show current configuration
+        self.ui.config_curr_classfile.setText("<b>Current Class File: </b>")
+        self.ui.config_curr_model.setText("<b>Current Model File: </b>")
+        self.ui.class_label.setText("<b>Classes: </b>")
+        self.ui.classfile.setText("Select a text file containing class names <i>(e.g. classes.txt)</i>")
+        self.ui.model_name.setText("Select an ONNX model file <i>(e.g. yolov5.onnx)</i>")
+        self.ui.class_list.setText("<i>None</i>")
+
         # Model configuration section
         self.ui.config_camera_label.setText('ONNX Model Path')
         self.ui.config_camera_lineedit.setText("Select an ONNX model file (e.g. yolov5.onnx)")
@@ -209,7 +213,6 @@ class MainWindow(QMainWindow):
         self.ui.config_cfscore_btn_sub.setText('-')
         self.ui.config_cfscore_btn_sub.setCursor(Qt.PointingHandCursor)
 
-
         # Add config page to stacked widget
         self.ui.pages.addWidget(self.ui.config_section_frame)   # Initialize the UI class
     
@@ -219,6 +222,8 @@ class MainWindow(QMainWindow):
         file_name, _ = QFileDialog.getOpenFileName(self, "Select ONNX Model File", "", "ONNX Files (*.onnx);;All Files (*)", options=options)
         
         if file_name:
+            base_name = os.path.basename(file_name)
+            self.ui.model_name.setText(base_name)
             self.ui.config_camera_lineedit.setText(file_name)
             self.model_name = file_name
 
@@ -228,19 +233,28 @@ class MainWindow(QMainWindow):
         file_name, _ = QFileDialog.getOpenFileName(self, "Select text file containing classes", "", "TXT Files (*.txt);;All Files (*)", options=options)
         
         if file_name:
+            base_name = os.path.basename(file_name)
+            self.ui.classfile.setText(base_name)
             self.ui.config_classes_lineedit.setText(file_name)
-            self.class_names = load_class_names(file_name)
+            self.class_names = self.load_class_names(file_name)
 
     '''Open file dialog to select image file'''
     def open_image_file(self):
+        try:
+            if self.model_name is None or self.class_names is None:
+                    raise ValueError("Model and class names must be set before processing an image.")
+        except ValueError as e:
+            QMessageBox.critical(self, "Configuration Error", str(e))
+            return
+        
         options = QFileDialog.Options()
         file_name, _ = QFileDialog.getOpenFileName(self, "Select Image File", "", "Image Files (*.jpg *.jpeg *.png);;All Files (*)", options=options)
-        
+
         if file_name:
             try:
                 QApplication.setOverrideCursor(Qt.WaitCursor)
                 self.image_path = file_name
-                print(self.class_names)
+                print(f'CLASS NAMES: {self.class_names}')
                 self.detector = YoloDetector(self.model_name, self.conf_threshold, self.class_names)
                 result_image, detections = self.detector.process_image(self.image_path)
                 # Save the result image to temporary file first
@@ -266,15 +280,35 @@ class MainWindow(QMainWindow):
     def init_camera_page(self, option):
         # Set page title and description
         self.ui.feed_title.setText(option.get("name"))
-        self.ui.feed_desc.setText(option.get("description"))
-        
+            
+        # Set frame style
+        self.ui.feed_results.setText(CAMERA_DESCRIPTION)
+        self.ui.feed_results.setWordWrap(True)  
+        self.ui.results_desc_frame.setFrameShape(QFrame.StyledPanel)
+        self.ui.results_desc_frame.setFrameShadow(QFrame.Raised)
+        shadow = QGraphicsDropShadowEffect(self)
+        shadow.setBlurRadius(20)
+        shadow.setXOffset(0)
+        shadow.setYOffset(2)
+        shadow.setColor(QColor(0, 0, 0, 10))  # semi-transparent black
+        self.ui.results_desc_frame.setGraphicsEffect(shadow)
+
+        self.ui.feed_classes_content.setText(CAMERA_DESCRIPTION)
+        self.ui.feed_classes_content.setWordWrap(True)  
+        self.ui.feed_classes_frame.setFrameShape(QFrame.StyledPanel)
+        self.ui.feed_classes_frame.setFrameShadow(QFrame.Raised)
+        shadow = QGraphicsDropShadowEffect(self)
+        shadow.setBlurRadius(20)
+        shadow.setXOffset(0)
+        shadow.setYOffset(2)
+        shadow.setColor(QColor(0, 0, 0, 10))  # semi-transparent black
+        self.ui.feed_classes_frame.setGraphicsEffect(shadow)
+
         # Setup camera controls
         self.ui.feed_detect_btn.setText("Detect")
         self.ui.feed_stop_btn.setText("Start Feed")
         self.ui.feed_detect_btn.setCursor(Qt.PointingHandCursor)
         self.ui.feed_stop_btn.setCursor(Qt.PointingHandCursor)
-        self.ui.feed_results.setText(CAMERA_DESCRIPTION)
-        self.ui.feed_results.setWordWrap(True)  
 
         self.ui.feed_progressbar.setVisible(False)
         self.ui.feed_progressbar.setStyleSheet(DEFAULT_STYLE)
@@ -874,5 +908,24 @@ class MainWindow(QMainWindow):
         except ValueError:
             # If not a valid float, don't update the threshold
             print(f"Invalid confidence value: {text}")
+
+    ''' Load class names from file '''
+    def load_class_names(self, classfile_path):
+        default_class_names = ["unknown"]
+        try:
+            class_names_file = classfile_path
+            with open(class_names_file, 'r') as f:
+                class_names = [line.strip() for line in f.readlines()]
+            if not class_names:
+                print(f"Warning: Class names file is empty. Using default class names.")
+                return default_class_names
+            return class_names
+            
+        except FileNotFoundError:
+            print(f"Warning: Class names file not found. Using default class names.")
+            return default_class_names
+        except Exception as e:
+            print(f"Error loading class names: {str(e)}. Using default class names.")
+            return default_class_names
 
 

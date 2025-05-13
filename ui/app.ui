@@ -34,7 +34,7 @@
      <widget class="QListWidget" name="maximizedmenu">
       <property name="minimumSize">
        <size>
-        <width>0</width>
+        <width>250</width>
         <height>0</height>
        </size>
       </property>
@@ -105,7 +105,7 @@
      <widget class="QListWidget" name="minimizedmenu">
       <property name="minimumSize">
        <size>
-        <width>0</width>
+        <width>75</width>
         <height>0</height>
        </size>
       </property>
@@ -128,8 +128,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>1121</width>
-          <height>841</height>
+          <width>361</width>
+          <height>295</height>
          </rect>
         </property>
         <property name="frameShape">
@@ -230,7 +230,7 @@ border-radius: 15px;</string>
               <property name="maximumSize">
                <size>
                 <width>16777215</width>
-                <height>60</height>
+                <height>200</height>
                </size>
               </property>
               <property name="frameShape">
@@ -241,7 +241,7 @@ border-radius: 15px;</string>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_4">
                <property name="spacing">
-                <number>0</number>
+                <number>10</number>
                </property>
                <property name="leftMargin">
                 <number>0</number>
@@ -267,6 +267,141 @@ border-radius: 15px;</string>
                   <string>TextLabel</string>
                  </property>
                 </widget>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="config_model">
+                 <property name="spacing">
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <widget class="QLabel" name="config_curr_model">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                     <horstretch>1</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>16777215</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>TextLabel</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="model_name">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                     <horstretch>4</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>16777215</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>TextLabel</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="config_classes">
+                 <property name="spacing">
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <widget class="QLabel" name="config_curr_classfile">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                     <horstretch>1</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>16777215</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>TextLabel</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="classfile">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                     <horstretch>4</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>16777215</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>TextLabel</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="classes_content">
+                 <property name="spacing">
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <widget class="QLabel" name="class_label">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                     <horstretch>1</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>16777215</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>TextLabel</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="class_list">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                     <horstretch>4</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>16777215</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>TextLabel</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
                </item>
               </layout>
              </widget>
@@ -724,7 +859,7 @@ border-radius: 15px;</string>
                 <widget class="QLabel" name="feed_label">
                  <property name="minimumSize">
                   <size>
-                   <width>3</width>
+                   <width>0</width>
                    <height>0</height>
                   </size>
                  </property>
@@ -746,7 +881,7 @@ border-radius: 15px;</string>
               </property>
               <property name="minimumSize">
                <size>
-                <width>0</width>
+                <width>250</width>
                 <height>0</height>
                </size>
               </property>
@@ -764,7 +899,7 @@ border-radius: 15px;</string>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_21">
                <property name="spacing">
-                <number>0</number>
+                <number>10</number>
                </property>
                <property name="leftMargin">
                 <number>0</number>
@@ -779,7 +914,7 @@ border-radius: 15px;</string>
                 <number>0</number>
                </property>
                <item>
-                <widget class="QFrame" name="feed_desc_frame">
+                <widget class="QFrame" name="feed_classes_frame">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                    <horstretch>0</horstretch>
@@ -789,7 +924,7 @@ border-radius: 15px;</string>
                  <property name="maximumSize">
                   <size>
                    <width>16777215</width>
-                   <height>60</height>
+                   <height>16777215</height>
                   </size>
                  </property>
                  <property name="frameShape">
@@ -798,13 +933,28 @@ border-radius: 15px;</string>
                  <property name="frameShadow">
                   <enum>QFrame::Raised</enum>
                  </property>
-                 <layout class="QHBoxLayout" name="horizontalLayout_5">
+                 <layout class="QHBoxLayout" name="horizontalLayout_10">
+                  <property name="spacing">
+                   <number>0</number>
+                  </property>
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>0</number>
+                  </property>
                   <item>
-                   <widget class="QLabel" name="feed_desc">
+                   <widget class="QLabel" name="feed_classes_content">
                     <property name="maximumSize">
                      <size>
                       <width>16777215</width>
-                      <height>60</height>
+                      <height>16777215</height>
                      </size>
                     </property>
                     <property name="text">
@@ -815,7 +965,7 @@ border-radius: 15px;</string>
                  </layout>
                 </widget>
                </item>
-               <item alignment="Qt::AlignTop">
+               <item>
                 <widget class="QFrame" name="results_desc_frame">
                  <property name="frameShape">
                   <enum>QFrame::StyledPanel</enum>

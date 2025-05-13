@@ -3,7 +3,6 @@ from PySide6.QtWidgets import *
 from PySide6.QtCore import Qt
 from PySide6.QtGui import *
 from PySide6.QtCore import *
-from processing import load_class_names
 from resources import COLORS
 from dialog import DetectionDialog
 
@@ -74,7 +73,7 @@ class DetectionCard(QFrame):
         else:
             timestamp_label.setText("No timestamp")
             
-        timestamp_label.setStyleSheet("color: #666; font-size: 12px;")
+        timestamp_label.setStyleSheet("color: #666; font-size: 16px;")
         header_layout.addWidget(timestamp_label, 1)
         layout.addLayout(header_layout)
         
