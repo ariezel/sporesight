@@ -232,6 +232,7 @@ QLineEdit:hover {
 #classfile,
 #class_list {
   font-size: 16px;
+  color: black;
 }
 
 #config_body_frame {
