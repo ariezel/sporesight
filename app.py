@@ -370,11 +370,7 @@ class MainWindow(QMainWindow):
     def on_detect_clicked(self):
         try:
             # Check if detector is initialized
-            if not self.detector:
-                self.detector = YoloDetector(self.model_name, self.conf_threshold, self.class_names)
-                # Get class names from detector if available
-                if hasattr(self.detector, 'get_class_names'):
-                    self.class_names = self.detector.get_class_names()
+            self.detector = YoloDetector(self.model_name, self.conf_threshold, self.class_names)
             
             # Check if camera thread is running
             if not self.camera_thread or not self.camera_thread.isRunning():
